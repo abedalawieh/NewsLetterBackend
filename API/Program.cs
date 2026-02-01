@@ -12,6 +12,7 @@ using NewsletterApp.Infrastructure.Data;
 using NewsletterApp.Infrastructure.Repositories;
 using NewsletterApp.Infrastructure.Services;
 using System.Text;
+using NewsletterApp.API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -126,6 +127,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseWebOptimizer();
 app.UseStaticFiles();
 app.UseRouting();

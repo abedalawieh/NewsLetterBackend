@@ -35,15 +35,6 @@ namespace NewsletterApp.API.Controllers
             return Ok(items);
         }
 
-        [HttpPost("items")]
-        [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<LookupDto>> CreateItem([FromBody] CreateLookupDto dto)
-        {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-            var item = await _lookupService.CreateItemAsync(dto);
-            return Ok(item);
-        }
-
         [HttpPut("items/{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<LookupDto>> UpdateItem(Guid id, [FromBody] UpdateLookupDto dto)
@@ -58,9 +49,7 @@ namespace NewsletterApp.API.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteItem(Guid id)
         {
-            var result = await _lookupService.DeleteItemAsync(id);
-            if (!result) return NotFound();
-            return NoContent();
+            return Forbid();
         }
     }
 }

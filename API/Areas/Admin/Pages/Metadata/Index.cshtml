@@ -16,9 +16,6 @@
         <h1 class="h3 fw-bold">System Metadata</h1>
         <p class="text-secondary small">Manage system lookup values and categories</p>
     </div>
-    <button class="btn btn-success rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#createCategoryModal">
-        <i class="fas fa-folder-plus me-2"></i> New Category
-    </button>
 </div>
 
 @if (Model.Categories != null)
@@ -32,18 +29,6 @@
                     <p class="text-secondary small mb-0">@category.Description</p>
                 </div>
                 <div class="d-flex gap-2 align-items-center">
-                    <button class="btn btn-primary btn-sm rounded-pill px-3" onclick="openCreateModal('@category.Name')">
-                        <i class="fas fa-plus me-1"></i> Add Item
-                    </button>
-                    @{
-                        var isSystemCat = category.Name == "SubscriberType" || category.Name == "CommunicationMethod" || category.Name == "Interest";
-                    }
-                    @if (!category.Items.Any() && !isSystemCat)
-                    {
-                        <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3" onclick="openDeleteCategoryModal('@category.Id', '@category.Name.Replace("'", "\\'")')">
-                            <i class="fas fa-trash-alt me-1"></i> Delete Category
-                        </button>
-                    }
                 </div>
             </div>
             
@@ -157,15 +142,6 @@
                                             onclick="document.getElementById('toggleForm-@item.Id').submit();" title="@(item.IsActive ? "Deactivate" : "Activate")">
                                             <i class="fas @(item.IsActive ? "fa-power-off" : "fa-play")"></i>
                                         </button>
-
-                                        @* Delete Button - Only for non-system items *@
-                                        @if (!item.IsSystem)
-                                        {
-                                            <button type="button" class="btn btn-sm btn-danger rounded-pill px-2" 
-                                                onclick="openDeleteModal('@item.Id', '@item.Label.Replace("'", "\\'")');" title="Delete">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        }
                                     </td>
                                 </tr>
                             }
@@ -194,45 +170,6 @@
         }
     }
 }
-
-<!-- Create Modal -->
-<div class="modal fade" id="createModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content bg-dark border border-secondary text-white">
-            <div class="modal-header border-secondary">
-                <h5 class="modal-title">Add New Item</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form method="post" asp-page-handler="Create" id="createItemForm">
-                <div class="modal-body">
-                    <div id="createErrorMessage" class="alert alert-danger d-none" role="alert"></div>
-                    
-                    <!-- Fix: Explicitly name and ID the input so JS can find it and model binding works -->
-                    <input type="hidden" id="createCategoryInput" name="NewItem.Category" />
-                    
-                    <div class="mb-3">
-                        <label asp-for="NewItem.Value" class="form-label text-secondary small">Value (Code)</label>
-                        <input asp-for="NewItem.Value" class="form-control bg-black border-secondary text-white" required />
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label asp-for="NewItem.Label" class="form-label text-secondary small">Display Label</label>
-                        <input asp-for="NewItem.Label" class="form-control bg-black border-secondary text-white" required />
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label asp-for="NewItem.SortOrder" class="form-label text-secondary small">Sort Order</label>
-                        <input asp-for="NewItem.SortOrder" type="number" class="form-control bg-black border-secondary text-white" value="0" />
-                    </div>
-                </div>
-                <div class="modal-footer border-secondary">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Create Item</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
 <!-- Edit Modal -->
 <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
@@ -278,96 +215,8 @@
     </div>
 </div>
 
-<!-- Delete Item Confirmation Modal -->
-<div class="modal fade" id="deleteItemModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content bg-dark border border-danger text-white">
-            <div class="modal-header border-danger bg-danger bg-opacity-10">
-                <div>
-                    <h5 class="modal-title text-danger fw-bold">
-                        <i class="fas fa-exclamation-triangle me-2"></i> Delete Item
-                    </h5>
-                </div>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p class="mb-2">Are you sure you want to permanently delete this item?</p>
-                <p class="text-secondary small mb-0">
-                    <strong id="deleteItemLabel"></strong> will be removed from the system. This action cannot be undone.
-                </p>
-            </div>
-            <div class="modal-footer border-danger">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form method="post" asp-page-handler="Delete" id="deleteItemForm" class="d-inline">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" id="deleteItemId" name="id" />
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash-alt me-1"></i> Permanently Delete
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Delete Category Confirmation Modal -->
-<div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content bg-dark border border-danger text-white">
-            <div class="modal-header border-danger bg-danger bg-opacity-10">
-                <div>
-                    <h5 class="modal-title text-danger fw-bold">
-                        <i class="fas fa-exclamation-triangle me-2"></i> Delete Category
-                    </h5>
-                </div>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p class="mb-2">Are you sure you want to delete this empty category?</p>
-                <p class="text-secondary small mb-0">
-                    <strong id="deleteCategoryName"></strong> will be permanently removed from the system. This action cannot be undone.
-                </p>
-            </div>
-            <div class="modal-footer border-danger">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form method="post" asp-page-handler="DeleteCategory" id="deleteCategoryForm" class="d-inline">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" id="deleteCategoryId" name="id" />
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash-alt me-1"></i> Permanently Delete
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
 @section Scripts {
     <script>
-        function openDeleteModal(id, label) {
-            document.getElementById('deleteItemId').value = id;
-            document.getElementById('deleteItemLabel').textContent = label;
-            var modal = new bootstrap.Modal(document.getElementById('deleteItemModal'));
-            modal.show();
-        }
-
-        function openDeleteCategoryModal(id, categoryName) {
-            document.getElementById('deleteCategoryId').value = id;
-            document.getElementById('deleteCategoryName').textContent = categoryName;
-            var modal = new bootstrap.Modal(document.getElementById('deleteCategoryModal'));
-            modal.show();
-        }
-
-        function openCreateModal(category) {
-            // Fix: Use correct ID matching the input or name attribute selector
-            // Since we updated input to have id='createCategoryInput', use that.
-            var input = document.getElementById('createCategoryInput');
-            if(input) input.value = category;
-            
-            var modal = new bootstrap.Modal(document.getElementById('createModal'));
-            modal.show();
-        }
-
         function openEditModal(id, category, value, label, sortOrder, isActive) {
             document.getElementById('editItemId').value = id;
             document.getElementById('editCategory').value = category;
@@ -385,32 +234,3 @@
         }
     </script>
 }
-
-<!-- Create Category Modal -->
-<div class="modal fade" id="createCategoryModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content bg-dark border border-secondary text-white">
-            <div class="modal-header border-secondary">
-                <h5 class="modal-title">Create New Category</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form method="post" asp-page-handler="CreateCategory">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label asp-for="NewCategoryName" class="form-label text-secondary small">Category Name</label>
-                        <input asp-for="NewCategoryName" class="form-control bg-black border-secondary text-white" required />
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label asp-for="NewCategoryDescription" class="form-label text-secondary small">Description</label>
-                        <input asp-for="NewCategoryDescription" class="form-control bg-black border-secondary text-white" />
-                    </div>
-                </div>
-                <div class="modal-footer border-secondary">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-success">Create Category</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>

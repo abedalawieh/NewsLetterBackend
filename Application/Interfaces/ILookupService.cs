@@ -9,14 +9,7 @@ namespace NewsletterApp.Application.Interfaces
     {
         Task<IEnumerable<CategoryDto>> GetAllCategoriesAsync();
         Task<IEnumerable<LookupDto>> GetItemsByCategoryAsync(string category);
-        Task<LookupDto> CreateItemAsync(CreateLookupDto dto);
         Task<LookupDto> UpdateItemAsync(Guid id, UpdateLookupDto dto);
-        Task<bool> DeleteItemAsync(Guid id);
-        
-        // Category management
-        Task<CategoryDto> CreateCategoryAsync(string name, string description);
-        Task<bool> DeleteCategoryAsync(Guid id);
-        Task<bool> CategoryHasItemsAsync(Guid categoryId);
     }
 
     public class CategoryDto

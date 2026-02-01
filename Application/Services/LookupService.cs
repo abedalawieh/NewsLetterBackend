@@ -30,17 +30,6 @@ namespace NewsletterApp.Application.Services
             return items.Select(TranslateToDto);
         }
 
-        public async Task<LookupDto> CreateItemAsync(CreateLookupDto dto)
-        {
-            var category = await _repository.GetCategoryByNameAsync(dto.Category);
-            if (category == null) throw new Exception("Category not found");
-
-            // Newly created items via UI are NOT system items
-            var item = LookupItem.Create(category.Id, dto.Value, dto.Label, dto.SortOrder, isSystem: false);
-            var created = await _repository.AddItemAsync(item);
-            return TranslateToDto(created);
-        }
-
         public async Task<LookupDto> UpdateItemAsync(Guid id, UpdateLookupDto dto)
         {
             var item = await _repository.GetItemByIdAsync(id);
@@ -52,35 +41,6 @@ namespace NewsletterApp.Application.Services
 
             var updated = await _repository.UpdateItemAsync(item);
             return TranslateToDto(updated);
-        }
-
-        public async Task<bool> DeleteItemAsync(Guid id)
-        {
-            return await _repository.DeleteItemAsync(id);
-        }
-
-        public async Task<CategoryDto> CreateCategoryAsync(string name, string description)
-        {
-            if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Category name is required");
-
-            var existing = await _repository.GetCategoryByNameAsync(name);
-            if (existing != null) throw new InvalidOperationException($"Category '{name}' already exists.");
-
-            // Newly created categories via UI are NOT system categories
-            var category = LookupCategory.Create(name, description, isSystem: false);
-            var created = await _repository.AddCategoryAsync(category);
-            return TranslateCategoryToDto(created);
-        }
-
-        public async Task<bool> DeleteCategoryAsync(Guid id)
-        {
-            return await _repository.DeleteCategoryAsync(id);
-        }
-
-        public async Task<bool> CategoryHasItemsAsync(Guid categoryId)
-        {
-            var count = await _repository.GetItemCountByCategoryIdAsync(categoryId);
-            return count > 0;
         }
 
         private CategoryDto TranslateCategoryToDto(LookupCategory category)
