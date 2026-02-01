@@ -48,6 +48,23 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Admins
             };
         }
 
+        /// <summary>
+        /// Returns true if the username is the protected system admin (cannot be disabled or have password changed by others).
+        /// </summary>
+        public bool IsSystemAdmin(string username)
+        {
+            return string.Equals(username, "admin", StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// Returns true if the current logged-in user is the system admin.
+        /// </summary>
+        public bool IsCurrentUserSystemAdmin()
+        {
+            var name = User.Identity?.Name;
+            return IsSystemAdmin(name ?? "");
+        }
+
         public async Task<IActionResult> OnPostToggleStatusAsync(string id)
         {
             try
@@ -55,10 +72,9 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Admins
                 var user = await _userManager.FindByIdAsync(id);
                 if (user == null) return NotFound();
 
-                // Prevent deactivating the main system admin
-                if (user.UserName?.ToLower() == "systemadmin")
+                if (IsSystemAdmin(user.UserName))
                 {
-                    TempData["ErrorMessage"] = "Cannot deactivate the system administrator account.";
+                    TempData["ErrorMessage"] = "Cannot modify the system administrator account.";
                     return RedirectToPage();
                 }
 

@@ -62,20 +62,27 @@
                             </td>
                             <td>
                                 <div class="btn-group btn-group-sm">
-                                    <button type="button" class="btn btn-outline-info" title="Reset Password">
-                                        <i class="fas fa-key"></i>
-                                    </button>
-                                    @if (admin.UserName != "systemadmin")
+                                    @if (!Model.IsSystemAdmin(admin.UserName))
                                     {
+                                        <a asp-page="ChangePassword" asp-route-id="@admin.Id" class="btn btn-outline-info" title="Reset Password">
+                                            <i class="fas fa-key"></i>
+                                        </a>
                                         <button type="button" class="btn btn-outline-warning" 
                                                 onclick="document.getElementById('toggleForm-@admin.Id').submit();"
-                                                title="Toggle Status">
+                                                title="Enable/Disable">
                                             <i class="fas fa-power-off"></i>
                                         </button>
                                     }
-                                    <button type="button" class="btn btn-outline-danger" title="Lock Account">
-                                        <i class="fas fa-lock"></i>
-                                    </button>
+                                    else if (Model.IsCurrentUserSystemAdmin())
+                                    {
+                                        <a asp-page="ChangePassword" asp-route-id="@admin.Id" class="btn btn-outline-info" title="Change My Password">
+                                            <i class="fas fa-key"></i> Change My Password
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary" title="System admin - only they can change their password">Protected</span>
+                                    }
                                 </div>
                             </td>
                         </tr>
@@ -118,10 +125,10 @@
     </nav>
 }
 
-<!-- Toggle Status Forms -->
+<!-- Toggle Status Forms (only for non-system admins) -->
 @foreach (var admin in Model.Administrators)
 {
-    @if (admin.UserName != "systemadmin")
+    @if (!Model.IsSystemAdmin(admin.UserName))
     {
         <form id="toggleForm-@admin.Id" method="post" asp-page-handler="ToggleStatus" asp-route-id="@admin.Id" style="display:none;"></form>
     }

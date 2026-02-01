@@ -15,36 +15,27 @@
 <div class="card mb-4">
     <div class="card-body">
         <form method="get" class="row g-3">
+            <input type="hidden" name="pageNumber" value="1" />
             <div class="col-md-4">
                 <input type="text" name="searchTerm" class="form-control bg-dark text-white border-secondary" 
-                       placeholder="Search by email..." value="@Model.SearchTerm" />
+                       placeholder="Search by email or name..." value="@Model.SearchTerm" />
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <select name="statusFilter" class="form-select bg-dark text-white border-secondary">
                     <option value="">All Status</option>
-                    @{
-                        var activeSelected = "active" == Model.StatusFilter ? true : false;
-                        var inactiveSelected = "inactive" == Model.StatusFilter ? true : false;
-                    }
-                    @if (activeSelected)
-                    {
-                        <option value="active" selected="selected">Active</option>
-                    }
-                    else
-                    {
-                        <option value="active">Active</option>
-                    }
-                    @if (inactiveSelected)
-                    {
-                        <option value="inactive" selected="selected">Inactive</option>
-                    }
-                    else
-                    {
-                        <option value="inactive">Inactive</option>
-                    }
+                    <option value="active" selected="@("active" == Model.StatusFilter)">Active</option>
+                    <option value="inactive" selected="@("inactive" == Model.StatusFilter)">Inactive</option>
                 </select>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
+                <select name="pageSize" class="form-select bg-dark text-white border-secondary">
+                    <option value="10" selected="@(Model.PageSize == 10)">10 per page</option>
+                    <option value="25" selected="@(Model.PageSize == 25)">25 per page</option>
+                    <option value="50" selected="@(Model.PageSize == 50)">50 per page</option>
+                    <option value="100" selected="@(Model.PageSize == 100)">100 per page</option>
+                </select>
+            </div>
+            <div class="col-md-2">
                 <button type="submit" class="btn btn-primary w-100">
                     <i class="fas fa-search me-2"></i> Search
                 </button>
@@ -52,6 +43,14 @@
         </form>
     </div>
 </div>
+
+<!-- Results summary -->
+@if (Model.Pagination != null && Model.Pagination.TotalItems > 0)
+{
+    <p class="text-secondary small mb-2">
+        Showing @((Model.Pagination.CurrentPage - 1) * Model.Pagination.PageSize + 1) - @(Math.Min(Model.Pagination.CurrentPage * Model.Pagination.PageSize, Model.Pagination.TotalItems)) of @Model.Pagination.TotalItems subscriber(s)
+    </p>
+}
 
 <!-- Table -->
 <div class="card">
@@ -124,27 +123,79 @@
 </div>
 
 <!-- Pagination -->
-@if (Model.Pagination?.TotalPages > 1)
+@if (Model.Pagination != null && Model.Pagination.TotalPages > 1)
 {
+    var totalPages = Model.Pagination.TotalPages;
+    var currentPage = Model.Pagination.CurrentPage;
     <nav aria-label="Page navigation" class="mt-4">
-        <ul class="pagination justify-content-center">
-            @for (int i = 1; i <= Model.Pagination.TotalPages; i++)
-            {
-                if (i == Model.Pagination.CurrentPage)
+        <ul class="pagination justify-content-center flex-wrap">
+            <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
+                @if (currentPage > 1)
                 {
-                    <li class="page-item active">
-                        <span class="page-link">@i</span>
-                    </li>
+                    <a class="page-link" asp-page="Index" asp-route-pageNumber="1"
+                       asp-route-searchTerm="@Model.SearchTerm" asp-route-statusFilter="@Model.StatusFilter" asp-route-pageSize="@Model.PageSize">First</a>
                 }
                 else
                 {
-                    <li class="page-item">
-                        <a class="page-link" asp-page="Index" asp-route-pageNumber="@i"
-                           asp-route-searchTerm="@Model.SearchTerm" asp-route-statusFilter="@Model.StatusFilter">@i</a>
-                    </li>
+                    <span class="page-link">First</span>
+                }
+            </li>
+            <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
+                @if (currentPage > 1)
+                {
+                    <a class="page-link" asp-page="Index" asp-route-pageNumber="@(currentPage - 1)"
+                       asp-route-searchTerm="@Model.SearchTerm" asp-route-statusFilter="@Model.StatusFilter" asp-route-pageSize="@Model.PageSize">Previous</a>
+                }
+                else
+                {
+                    <span class="page-link">Previous</span>
+                }
+            </li>
+            @{
+                var startPage = Math.Max(1, currentPage - 2);
+                var endPage = Math.Min(totalPages, currentPage + 2);
+                @for (var i = startPage; i <= endPage; i++)
+                {
+                    var pageNum = i;
+                    if (pageNum == currentPage)
+                    {
+                        <li class="page-item active">
+                            <span class="page-link">@pageNum</span>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item">
+                            <a class="page-link" asp-page="Index" asp-route-pageNumber="@pageNum"
+                               asp-route-searchTerm="@Model.SearchTerm" asp-route-statusFilter="@Model.StatusFilter" asp-route-pageSize="@Model.PageSize">@pageNum</a>
+                        </li>
+                    }
                 }
             }
+            <li class="page-item @(currentPage >= totalPages ? "disabled" : "")">
+                @if (currentPage < totalPages)
+                {
+                    <a class="page-link" asp-page="Index" asp-route-pageNumber="@(currentPage + 1)"
+                       asp-route-searchTerm="@Model.SearchTerm" asp-route-statusFilter="@Model.StatusFilter" asp-route-pageSize="@Model.PageSize">Next</a>
+                }
+                else
+                {
+                    <span class="page-link">Next</span>
+                }
+            </li>
+            <li class="page-item @(currentPage >= totalPages ? "disabled" : "")">
+                @if (currentPage < totalPages)
+                {
+                    <a class="page-link" asp-page="Index" asp-route-pageNumber="@totalPages"
+                       asp-route-searchTerm="@Model.SearchTerm" asp-route-statusFilter="@Model.StatusFilter" asp-route-pageSize="@Model.PageSize">Last</a>
+                }
+                else
+                {
+                    <span class="page-link">Last</span>
+                }
+            </li>
         </ul>
+        <p class="text-center text-secondary small mt-2 mb-0">Page @currentPage of @totalPages</p>
     </nav>
 }
 

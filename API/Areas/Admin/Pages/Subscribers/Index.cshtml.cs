@@ -61,10 +61,14 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Subscribers
             var totalPages = (int)Math.Ceiling(totalItems / (double)PageSize);
             Subscribers = subscriberList.Skip((PageNumber - 1) * PageSize).Take(PageSize).ToList();
 
+            // Ensure valid page number
+            if (PageNumber < 1) PageNumber = 1;
+            if (PageNumber > totalPages && totalPages > 0) PageNumber = totalPages;
+
             Pagination = new PaginationViewModel
             {
                 CurrentPage = PageNumber,
-                TotalPages = totalPages,
+                TotalPages = Math.Max(1, totalPages),
                 TotalItems = totalItems,
                 PageSize = PageSize,
                 PageParameterName = "pageNumber"
@@ -94,7 +98,8 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Subscribers
             {
                 searchTerm = SearchTerm,
                 statusFilter = StatusFilter,
-                pageNumber = PageNumber
+                pageNumber = PageNumber,
+                pageSize = PageSize
             });
         }
 
@@ -114,7 +119,8 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Subscribers
             {
                 searchTerm = SearchTerm,
                 statusFilter = StatusFilter,
-                pageNumber = PageNumber
+                pageNumber = PageNumber,
+                pageSize = PageSize
             });
         }
     }
