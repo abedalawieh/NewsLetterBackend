@@ -1,16 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using NewsletterApp.API.Areas.Admin.Pages.ViewModels;
 using NewsletterApp.Application.Interfaces;
 using NewsletterApp.Domain.Entities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace NewsletterApp.API.Areas.Admin.Pages.Newsletters
 {
-    public class IndexModel : PageModel
+    public class IndexModel : BasePaginatedPageModel
     {
         private readonly INewsletterService _newsletterService;
 
@@ -21,31 +19,13 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Newsletters
 
         public IEnumerable<Newsletter> Newsletters { get; set; }
 
-        [BindProperty(SupportsGet = true)]
-        public int PageNumber { get; set; } = 1;
-
-        [BindProperty(SupportsGet = true)]
-        public int PageSize { get; set; } = 10;
-
         public PaginationViewModel Pagination { get; set; }
 
         public async Task OnGetAsync()
         {
-            Newsletters = await _newsletterService.GetHistoryAsync();
-            var newsletterList = Newsletters.ToList();
-            
-            var totalItems = newsletterList.Count;
-            var totalPages = (int)Math.Ceiling(totalItems / (double)PageSize);
-            Newsletters = newsletterList.Skip((PageNumber - 1) * PageSize).Take(PageSize).ToList();
-
-            Pagination = new PaginationViewModel
-            {
-                CurrentPage = PageNumber,
-                TotalPages = totalPages,
-                TotalItems = totalItems,
-                PageSize = PageSize,
-                PageParameterName = "pageNumber"
-            };
+            var (items, totalCount) = await _newsletterService.GetPagedHistoryAsync(PageNumber, PageSize);
+            Newsletters = items;
+            Pagination = BuildPagination(totalCount);
         }
 
         public async Task<IActionResult> OnPostSendAsync(Guid id)
@@ -53,11 +33,30 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Newsletters
             try
             {
                 await _newsletterService.SendNewsletterAsync(id);
-                TempData["SuccessMessage"] = "Newsletter sent successfully!";
+                SetSuccess("Newsletter sent successfully!");
             }
-            catch (Exception ex)
+            catch (InvalidOperationException ex)
             {
-                TempData["ErrorMessage"] = $"Error sending newsletter: {ex.Message}";
+                if (ex.Message == "NO_RECIPIENTS")
+                {
+                    SetError("No subscribers match the selected interests.");
+                }
+                else if (ex.Message == "NOT_DRAFT")
+                {
+                    SetError("Newsletter not found or already sent.");
+                }
+                else if (ex.Message == "SEND_FAILED")
+                {
+                    SetError("No emails were delivered. Please check SMTP settings.");
+                }
+                else
+                {
+                    SetError("We couldn't send the newsletter. Please try again or contact support.");
+                }
+            }
+            catch
+            {
+                SetError("We couldn't send the newsletter. Please try again or contact support.");
             }
             return RedirectToPage();
         }
@@ -67,12 +66,18 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Newsletters
             try
             {
                 var result = await _newsletterService.DeleteAsync(id);
-                TempData["SuccessMessage"] = result ? "Newsletter deleted successfully." : "Newsletter not found.";
-                if (!result) TempData["ErrorMessage"] = "Newsletter not found.";
+                if (result)
+                {
+                    SetSuccess("Newsletter deleted successfully.");
+                }
+                else
+                {
+                    SetError("Newsletter not found.");
+                }
             }
-            catch (Exception ex)
+            catch
             {
-                TempData["ErrorMessage"] = $"Error deleting newsletter: {ex.Message}";
+                SetError("We couldn't delete the newsletter. Please try again or contact support.");
             }
             return RedirectToPage();
         }

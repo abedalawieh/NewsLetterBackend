@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using NewsletterApp.API.Areas.Admin.Pages.ViewModels;
+using System;
 
 namespace NewsletterApp.API.Areas.Admin.Pages
 {
@@ -36,6 +38,25 @@ namespace NewsletterApp.API.Areas.Admin.Pages
             if (PageNumber < 1) PageNumber = 1;
             if (PageSize < 5) PageSize = 5;
             if (PageSize > 100) PageSize = 100;
+        }
+
+        protected PaginationViewModel BuildPagination(int totalItems, string pageParameterName = "pageNumber")
+        {
+            ValidatePaginationParams();
+            var totalPages = (int)Math.Ceiling(totalItems / (double)PageSize);
+            if (PageNumber < 1) PageNumber = 1;
+            if (totalPages > 0 && PageNumber > totalPages) PageNumber = totalPages;
+            var normalizedTotalPages = Math.Max(1, totalPages);
+
+            return new PaginationViewModel
+            {
+                CurrentPage = PageNumber,
+                TotalPages = normalizedTotalPages,
+                TotalItems = totalItems,
+                PageSize = PageSize,
+                PageParameterName = pageParameterName,
+                SelectedPageSize = PageSize
+            };
         }
 
         protected IActionResult RedirectToSelf()

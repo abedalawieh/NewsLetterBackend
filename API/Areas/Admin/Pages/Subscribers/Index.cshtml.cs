@@ -1,16 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using NewsletterApp.API.Areas.Admin.Pages.ViewModels;
 using NewsletterApp.Application.DTOs;
 using NewsletterApp.Application.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace NewsletterApp.API.Areas.Admin.Pages.Subscribers
 {
-    public class IndexModel : PageModel
+    public class IndexModel : BasePaginatedPageModel
     {
         private readonly ISubscriberService _subscriberService;
 
@@ -25,51 +23,31 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Subscribers
         [BindProperty(SupportsGet = true)]
         public string StatusFilter { get; set; }
 
-        [BindProperty(SupportsGet = true)]
-        public int PageNumber { get; set; } = 1;
-
-        [BindProperty(SupportsGet = true)]
-        public int PageSize { get; set; } = 10;
-
         public IEnumerable<SubscriberResponseDto> Subscribers { get; set; }
         public PaginationViewModel Pagination { get; set; }
 
         public async Task OnGetAsync()
         {
-            var allSubscribers = await _subscriberService.GetAllSubscribersAsync();
-            var subscriberList = allSubscribers.ToList();
-
-            if (!string.IsNullOrEmpty(SearchTerm))
+            bool? isActive = null;
+            if (!string.IsNullOrWhiteSpace(StatusFilter))
             {
-                subscriberList = subscriberList
-                    .Where(s => s.Email.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase) ||
-                                s.FirstName.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase) ||
-                                s.LastName.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase))
-                    .ToList();
+                var normalized = StatusFilter.Trim().ToLowerInvariant();
+                if (normalized == "active") isActive = true;
+                if (normalized == "inactive") isActive = false;
             }
 
-            if (!string.IsNullOrEmpty(StatusFilter))
+            var result = await _subscriberService.GetPagedSubscribersAsync(new SubscriberFilterParams
             {
-                subscriberList = StatusFilter.ToLower() == "active"
-                    ? subscriberList.Where(s => s.IsActive).ToList()
-                    : subscriberList.Where(s => !s.IsActive).ToList();
-            }
-
-            var totalItems = subscriberList.Count;
-            var totalPages = (int)Math.Ceiling(totalItems / (double)PageSize);
-            Subscribers = subscriberList.Skip((PageNumber - 1) * PageSize).Take(PageSize).ToList();
-
-            if (PageNumber < 1) PageNumber = 1;
-            if (PageNumber > totalPages && totalPages > 0) PageNumber = totalPages;
-
-            Pagination = new PaginationViewModel
-            {
-                CurrentPage = PageNumber,
-                TotalPages = Math.Max(1, totalPages),
-                TotalItems = totalItems,
+                SearchTerm = SearchTerm,
+                IsActive = isActive,
+                PageNumber = PageNumber,
                 PageSize = PageSize,
-                PageParameterName = "pageNumber"
-            };
+                SortBy = "CreatedAt",
+                SortDescending = true
+            });
+
+            Subscribers = result.Items;
+            Pagination = BuildPagination(result.TotalItems);
         }
 
         public async Task<IActionResult> OnPostToggleAsync(Guid id)
@@ -84,11 +62,11 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Subscribers
                 else
                     await _subscriberService.ActivateSubscriberAsync(id);
 
-                TempData["SuccessMessage"] = $"Subscriber status updated successfully";
+                SetSuccess("Subscriber status updated successfully");
             }
-            catch (Exception ex)
+            catch
             {
-                TempData["ErrorMessage"] = $"Error updating subscriber: {ex.Message}";
+                SetError("Error updating subscriber");
             }
 
             return RedirectToPage(new
@@ -105,11 +83,11 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Subscribers
             try
             {
                 await _subscriberService.DeleteSubscriberAsync(id);
-                TempData["SuccessMessage"] = "Subscriber deleted successfully";
+                SetSuccess("Subscriber deleted successfully");
             }
-            catch (Exception ex)
+            catch
             {
-                TempData["ErrorMessage"] = $"Error deleting subscriber: {ex.Message}";
+                SetError("Error deleting subscriber");
             }
 
             return RedirectToPage(new

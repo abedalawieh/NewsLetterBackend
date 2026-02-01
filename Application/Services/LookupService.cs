@@ -6,41 +6,68 @@ using NewsletterApp.Application.DTOs;
 using NewsletterApp.Application.Interfaces;
 using NewsletterApp.Domain.Entities;
 using NewsletterApp.Domain.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace NewsletterApp.Application.Services
 {
     public class LookupService : ILookupService
     {
         private readonly ILookupRepository _repository;
+        private readonly ILogger<LookupService> _logger;
 
-        public LookupService(ILookupRepository repository)
+        public LookupService(ILookupRepository repository, ILogger<LookupService> logger)
         {
-            _repository = repository;
+            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<IEnumerable<CategoryDto>> GetAllCategoriesAsync()
         {
-            var categories = await _repository.GetAllCategoriesAsync();
-            return categories.Select(TranslateCategoryToDto);
+            try
+            {
+                var categories = await _repository.GetAllCategoriesAsync();
+                return categories.Select(TranslateCategoryToDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting lookup categories");
+                throw;
+            }
         }
 
         public async Task<IEnumerable<LookupDto>> GetItemsByCategoryAsync(string category)
         {
-            var items = await _repository.GetItemsByCategoryAsync(category);
-            return items.Select(TranslateToDto);
+            try
+            {
+                var items = await _repository.GetItemsByCategoryAsync(category);
+                return items.Select(TranslateToDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting lookup items for category {Category}", category);
+                throw;
+            }
         }
 
         public async Task<LookupDto> UpdateItemAsync(Guid id, UpdateLookupDto dto)
         {
-            var item = await _repository.GetItemByIdAsync(id);
-            if (item == null) return null;
+            try
+            {
+                var item = await _repository.GetItemByIdAsync(id);
+                if (item == null) return null;
 
-            item.Label = dto.Label;
-            item.SortOrder = dto.SortOrder;
-            item.IsActive = dto.IsActive;
+                item.Label = dto.Label;
+                item.SortOrder = dto.SortOrder;
+                item.IsActive = dto.IsActive;
 
-            var updated = await _repository.UpdateItemAsync(item);
-            return TranslateToDto(updated);
+                var updated = await _repository.UpdateItemAsync(item);
+                return TranslateToDto(updated);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating lookup item {Id}", id);
+                throw;
+            }
         }
 
         private CategoryDto TranslateCategoryToDto(LookupCategory category)

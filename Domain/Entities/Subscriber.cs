@@ -11,8 +11,8 @@ namespace NewsletterApp.Domain.Entities
         public string LastName { get; private set; }
         public string Email { get; private set; }
         public string Type { get; private set; }
-        public List<string> CommunicationMethods { get; private set; } = new();
-        public List<string> Interests { get; private set; } = new();
+        public ICollection<SubscriberCommunicationMethod> CommunicationMethods { get; private set; } = new List<SubscriberCommunicationMethod>();
+        public ICollection<SubscriberInterest> Interests { get; private set; } = new List<SubscriberInterest>();
         public bool IsActive { get; private set; }
         
         public bool IsDeleted { get; set; }
@@ -29,8 +29,8 @@ namespace NewsletterApp.Domain.Entities
             string lastName,
             string email,
             string type,
-            IEnumerable<string> communicationMethods,
-            IEnumerable<string> interests)
+            IEnumerable<LookupItem> communicationMethods,
+            IEnumerable<LookupItem> interests)
         {
             if (string.IsNullOrWhiteSpace(firstName)) throw new ArgumentException("First name is required");
             if (string.IsNullOrWhiteSpace(lastName)) throw new ArgumentException("Last name is required");
@@ -47,8 +47,25 @@ namespace NewsletterApp.Domain.Entities
                 CreatedAt = DateTime.UtcNow
             };
 
-            subscriber.CommunicationMethods.AddRange(communicationMethods);
-            subscriber.Interests.AddRange(interests);
+            foreach (var method in communicationMethods ?? Array.Empty<LookupItem>())
+            {
+                subscriber.CommunicationMethods.Add(new SubscriberCommunicationMethod
+                {
+                    SubscriberId = subscriber.Id,
+                    LookupItemId = method.Id,
+                    LookupItem = method
+                });
+            }
+
+            foreach (var interest in interests ?? Array.Empty<LookupItem>())
+            {
+                subscriber.Interests.Add(new SubscriberInterest
+                {
+                    SubscriberId = subscriber.Id,
+                    LookupItemId = interest.Id,
+                    LookupItem = interest
+                });
+            }
 
             return subscriber;
         }
@@ -57,8 +74,8 @@ namespace NewsletterApp.Domain.Entities
             string firstName,
             string lastName,
             string type,
-            IEnumerable<string> communicationMethods,
-            IEnumerable<string> interests)
+            IEnumerable<LookupItem> communicationMethods,
+            IEnumerable<LookupItem> interests)
         {
             if (string.IsNullOrWhiteSpace(firstName)) throw new ArgumentException("First name is required");
             if (string.IsNullOrWhiteSpace(lastName)) throw new ArgumentException("Last name is required");
@@ -68,10 +85,26 @@ namespace NewsletterApp.Domain.Entities
             Type = type;
             
             CommunicationMethods.Clear();
-            CommunicationMethods.AddRange(communicationMethods);
+            foreach (var method in communicationMethods ?? Array.Empty<LookupItem>())
+            {
+                CommunicationMethods.Add(new SubscriberCommunicationMethod
+                {
+                    SubscriberId = Id,
+                    LookupItemId = method.Id,
+                    LookupItem = method
+                });
+            }
             
             Interests.Clear();
-            Interests.AddRange(interests);
+            foreach (var interest in interests ?? Array.Empty<LookupItem>())
+            {
+                Interests.Add(new SubscriberInterest
+                {
+                    SubscriberId = Id,
+                    LookupItemId = interest.Id,
+                    LookupItem = interest
+                });
+            }
             
             UpdatedAt = DateTime.UtcNow;
         }
@@ -120,5 +153,21 @@ namespace NewsletterApp.Domain.Entities
                 CreatedAt = DateTime.UtcNow
             };
         }
+    }
+
+    public class SubscriberInterest
+    {
+        public Guid SubscriberId { get; set; }
+        public Subscriber Subscriber { get; set; }
+        public Guid LookupItemId { get; set; }
+        public LookupItem LookupItem { get; set; }
+    }
+
+    public class SubscriberCommunicationMethod
+    {
+        public Guid SubscriberId { get; set; }
+        public Subscriber Subscriber { get; set; }
+        public Guid LookupItemId { get; set; }
+        public LookupItem LookupItem { get; set; }
     }
 }

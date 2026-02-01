@@ -20,13 +20,54 @@ namespace NewsletterApp.Infrastructure.Repositories
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
+        public override async Task<Subscriber> GetByIdAsync(Guid id)
+        {
+            try
+            {
+                return await Entities
+                    .Include(s => s.CommunicationMethods)
+                    .ThenInclude(sm => sm.LookupItem)
+                    .Include(s => s.Interests)
+                    .ThenInclude(si => si.LookupItem)
+                    .FirstOrDefaultAsync(s => s.Id == id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting subscriber by id {Id}", id);
+                throw;
+            }
+        }
+
+        public override async Task<IReadOnlyList<Subscriber>> GetAllAsync()
+        {
+            try
+            {
+                return await Entities
+                    .Include(s => s.CommunicationMethods)
+                    .ThenInclude(sm => sm.LookupItem)
+                    .Include(s => s.Interests)
+                    .ThenInclude(si => si.LookupItem)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting subscribers");
+                throw;
+            }
+        }
+
         public async Task<Subscriber> GetByEmailAsync(string email)
         {
             try
             {
                 if (string.IsNullOrEmpty(email)) return null;
                 var normalizedEmail = email.Trim().ToLower();
-                return await Entities.FirstOrDefaultAsync(s => s.Email.ToLower() == normalizedEmail);
+                return await Entities
+                    .Include(s => s.CommunicationMethods)
+                    .ThenInclude(sm => sm.LookupItem)
+                    .Include(s => s.Interests)
+                    .ThenInclude(si => si.LookupItem)
+                    .FirstOrDefaultAsync(s => s.Email.ToLower() == normalizedEmail);
             }
             catch (Exception ex)
             {
@@ -39,7 +80,13 @@ namespace NewsletterApp.Infrastructure.Repositories
         {
             try
             {
-                return await Entities.Where(s => s.IsActive).ToListAsync();
+                return await Entities
+                    .Where(s => s.IsActive)
+                    .Include(s => s.CommunicationMethods)
+                    .ThenInclude(sm => sm.LookupItem)
+                    .Include(s => s.Interests)
+                    .ThenInclude(si => si.LookupItem)
+                    .ToListAsync();
             }
             catch (Exception ex)
             {
@@ -63,14 +110,14 @@ namespace NewsletterApp.Infrastructure.Repositories
                     return new List<Subscriber>();
                 }
 
-                var query = Entities.Where(s => s.IsActive);
-
-                query = query.Where(s =>
-                    EF.Functions.Like("," + EF.Property<string>(s, "CommunicationMethods") + ",", "%,Email,%"));
-
-                query = query.Where(s =>
-                    interestList.Any(interest =>
-                        EF.Functions.Like("," + EF.Property<string>(s, "Interests") + ",", "%," + interest + ",%")));
+                var query = Entities
+                    .Where(s => s.IsActive)
+                    .Where(s => s.CommunicationMethods.Any(cm => cm.LookupItem.Value == "Email"))
+                    .Where(s => s.Interests.Any(i => interestList.Contains(i.LookupItem.Value)))
+                    .Include(s => s.CommunicationMethods)
+                    .ThenInclude(sm => sm.LookupItem)
+                    .Include(s => s.Interests)
+                    .ThenInclude(si => si.LookupItem);
 
                 return await query.ToListAsync();
             }
@@ -109,7 +156,7 @@ namespace NewsletterApp.Infrastructure.Repositories
         }
 
         public async Task<(IEnumerable<Subscriber> Items, int TotalCount)> GetPagedAsync(
-            string searchTerm, string type, string interest, bool? isActive, 
+            string searchTerm, string type, string interest, bool? isActive,
             int pageNumber, int pageSize, string sortBy, bool sortDescending)
         {
             try
@@ -119,8 +166,8 @@ namespace NewsletterApp.Infrastructure.Repositories
 
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
-                    query = query.Where(s => s.FirstName.Contains(searchTerm) || 
-                                           s.LastName.Contains(searchTerm) || 
+                    query = query.Where(s => s.FirstName.Contains(searchTerm) ||
+                                           s.LastName.Contains(searchTerm) ||
                                            s.Email.Contains(searchTerm));
                 }
 
@@ -131,7 +178,7 @@ namespace NewsletterApp.Infrastructure.Repositories
 
                 if (!string.IsNullOrWhiteSpace(interest))
                 {
-                    query = query.Where(s => s.Interests.Contains(interest));
+                    query = query.Where(s => s.Interests.Any(i => i.LookupItem.Value == interest));
                 }
 
                 if (isActive.HasValue)

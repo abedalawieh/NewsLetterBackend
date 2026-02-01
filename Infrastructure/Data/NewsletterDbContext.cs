@@ -23,6 +23,8 @@ namespace NewsletterApp.Infrastructure.Data
         public DbSet<LookupItem> LookupItems { get; set; }
         public DbSet<Newsletter> Newsletters { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }
+        public DbSet<SubscriberInterest> SubscriberInterests { get; set; }
+        public DbSet<SubscriberCommunicationMethod> SubscriberCommunicationMethods { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -55,26 +57,30 @@ namespace NewsletterApp.Infrastructure.Data
                 entity.Property(e => e.Email).IsRequired().HasMaxLength(255);
                 entity.HasIndex(e => e.Email).IsUnique();
                 entity.HasQueryFilter(e => !e.IsDeleted);
+            });
 
-                entity.Property(e => e.CommunicationMethods)
-                    .HasConversion(
-                        v => string.Join(',', v),
-                        v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList()
-                    )
-                    .Metadata.SetValueComparer(new Microsoft.EntityFrameworkCore.ChangeTracking.ValueComparer<List<string>>(
-                        (c1, c2) => c1.SequenceEqual(c2),
-                        c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
-                        c => c.ToList()));
+            modelBuilder.Entity<SubscriberInterest>(entity =>
+            {
+                entity.HasKey(e => new { e.SubscriberId, e.LookupItemId });
+                entity.HasOne(e => e.Subscriber)
+                    .WithMany(s => s.Interests)
+                    .HasForeignKey(e => e.SubscriberId);
+                entity.HasOne(e => e.LookupItem)
+                    .WithMany()
+                    .HasForeignKey(e => e.LookupItemId);
+                entity.HasQueryFilter(e => !e.LookupItem.IsDeleted);
+            });
 
-                entity.Property(e => e.Interests)
-                    .HasConversion(
-                        v => string.Join(',', v),
-                        v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList()
-                    )
-                    .Metadata.SetValueComparer(new Microsoft.EntityFrameworkCore.ChangeTracking.ValueComparer<List<string>>(
-                        (c1, c2) => c1.SequenceEqual(c2),
-                        c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
-                        c => c.ToList()));
+            modelBuilder.Entity<SubscriberCommunicationMethod>(entity =>
+            {
+                entity.HasKey(e => new { e.SubscriberId, e.LookupItemId });
+                entity.HasOne(e => e.Subscriber)
+                    .WithMany(s => s.CommunicationMethods)
+                    .HasForeignKey(e => e.SubscriberId);
+                entity.HasOne(e => e.LookupItem)
+                    .WithMany()
+                    .HasForeignKey(e => e.LookupItemId);
+                entity.HasQueryFilter(e => !e.LookupItem.IsDeleted);
             });
 
 
