@@ -66,7 +66,6 @@ namespace NewsletterApp.Application.DTOs
         public DateTime Timestamp { get; set; }
     }
 
-    /// <summary>For admin analytics: reason and count of unsubscribes.</summary>
     public class UnsubscribeStatDto
     {
         public string Reason { get; set; }

@@ -28,7 +28,6 @@ namespace NewsletterApp.Infrastructure.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            #region Lookup Configuration
 
             modelBuilder.Entity<LookupCategory>(entity =>
             {
@@ -48,9 +47,7 @@ namespace NewsletterApp.Infrastructure.Data
                 entity.HasQueryFilter(e => !e.IsDeleted);
             });
 
-            #endregion
 
-            #region Subscriber Configuration
 
             modelBuilder.Entity<Subscriber>(entity =>
             {
@@ -80,13 +77,10 @@ namespace NewsletterApp.Infrastructure.Data
                         c => c.ToList()));
             });
 
-            #endregion
 
-            #region Global Query Filters for Soft Delete
 
             modelBuilder.Entity<Newsletter>().HasQueryFilter(e => !e.IsDeleted);
 
-            #endregion
         }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -96,7 +90,6 @@ namespace NewsletterApp.Infrastructure.Data
                 switch (entry.State)
                 {
                     case EntityState.Deleted:
-                        // If it's already soft-deleted, we allow permanent deletion
                         if (!entry.Entity.IsDeleted)
                         {
                             entry.State = EntityState.Modified;
@@ -115,7 +108,6 @@ namespace NewsletterApp.Infrastructure.Data
                         entry.Entity.CreatedAt = DateTime.UtcNow;
                         if (string.IsNullOrWhiteSpace(entry.Entity.CreatedBy)) entry.Entity.CreatedBy = "System";
                         
-                        // Fix: Initialize Updated fields on creation to satisfy NOT NULL constraints
                         entry.Entity.UpdatedAt = DateTime.UtcNow;
                         if (string.IsNullOrWhiteSpace(entry.Entity.UpdatedBy)) entry.Entity.UpdatedBy = "System";
                         break;

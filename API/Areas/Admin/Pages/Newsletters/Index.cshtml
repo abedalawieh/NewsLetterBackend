@@ -72,7 +72,7 @@
     </div>
 </div>
 
-<!-- Pagination -->
+
 @if (Model.Pagination?.TotalPages > 1)
 {
     <nav aria-label="Page navigation" class="mt-4">
@@ -96,7 +96,7 @@
     </nav>
 }
 
-<!-- Send Forms -->
+
 @foreach (var newsletter in Model.Newsletters)
 {
     @if (newsletter.IsDraft)
@@ -105,7 +105,7 @@
     }
 }
 
-<!-- Delete Modal -->
+
 <div class="modal fade" id="deleteModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content bg-dark">

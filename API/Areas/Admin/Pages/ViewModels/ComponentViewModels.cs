@@ -3,10 +3,6 @@ using System.Collections.Generic;
 
 namespace NewsletterApp.API.Areas.Admin.Pages.ViewModels
 {
-    /// <summary>
-    /// ViewModel for PageHeader component
-    /// Provides strongly-typed model instead of dynamic
-    /// </summary>
     public class PageHeaderViewModel
     {
         public string Title { get; set; } = string.Empty;
@@ -15,9 +11,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.ViewModels
         public List<ActionButtonViewModel> Actions { get; set; } = new();
     }
 
-    /// <summary>
-    /// ViewModel for action buttons in page header
-    /// </summary>
     public class ActionButtonViewModel
     {
         public string Label { get; set; } = string.Empty;
@@ -28,9 +21,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.ViewModels
         public string? CssClass { get; set; }
     }
 
-    /// <summary>
-    /// ViewModel for FilterBar component
-    /// </summary>
     public class FilterBarViewModel
     {
         public string? SearchTerm { get; set; }
@@ -43,9 +33,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.ViewModels
         public bool ShowInterests { get; set; } = true;
     }
 
-    /// <summary>
-    /// ViewModel for filter dropdown option
-    /// </summary>
     public class FilterOptionViewModel
     {
         public string Label { get; set; } = string.Empty;
@@ -59,18 +46,12 @@ namespace NewsletterApp.API.Areas.Admin.Pages.ViewModels
         }
     }
 
-    /// <summary>
-    /// ViewModel for LoadingSpinner component
-    /// </summary>
     public class LoadingSpinnerViewModel
     {
         public SpinnerSize Size { get; set; } = SpinnerSize.Medium;
         public string? Text { get; set; } = "Loading...";
     }
 
-    /// <summary>
-    /// Enum for spinner sizes
-    /// </summary>
     public enum SpinnerSize
     {
         Small,
@@ -78,9 +59,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.ViewModels
         Large
     }
 
-    /// <summary>
-    /// ViewModel for Modal dialogs (delete, confirm, etc.)
-    /// </summary>
     public class ModalViewModel
     {
         public string Id { get; set; } = string.Empty;
@@ -93,9 +71,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.ViewModels
         public ModalButtonViewModel? SecondaryButton { get; set; }
     }
 
-    /// <summary>
-    /// ViewModel for modal buttons
-    /// </summary>
     public class ModalButtonViewModel
     {
         public string Label { get; set; } = string.Empty;
@@ -105,9 +80,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.ViewModels
         public bool IsSubmit { get; set; } = false;
     }
 
-    /// <summary>
-    /// Enum for modal types
-    /// </summary>
     public enum ModalType
     {
         Confirm,
@@ -117,9 +89,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.ViewModels
         Info
     }
 
-    /// <summary>
-    /// ViewModel for Form components
-    /// </summary>
     public class FormFieldViewModel
     {
         public string Name { get; set; } = string.Empty;
@@ -133,9 +102,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.ViewModels
         public List<FormOptionViewModel> Options { get; set; } = new();
     }
 
-    /// <summary>
-    /// ViewModel for form field options (select, radio, checkbox)
-    /// </summary>
     public class FormOptionViewModel
     {
         public string Label { get; set; } = string.Empty;
@@ -151,9 +117,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.ViewModels
         }
     }
 
-    /// <summary>
-    /// Enum for form field types
-    /// </summary>
     public enum FormFieldType
     {
         Text,
@@ -169,9 +132,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.ViewModels
         File
     }
 
-    /// <summary>
-    /// ViewModel for Form Button
-    /// </summary>
     public class FormButtonViewModel
     {
         public string Label { get; set; } = string.Empty;
@@ -185,9 +145,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.ViewModels
         public string? CssClass { get; set; }
     }
 
-    /// <summary>
-    /// Enum for button types
-    /// </summary>
     public enum ButtonType
     {
         Primary,
@@ -200,9 +157,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.ViewModels
         Dark
     }
 
-    /// <summary>
-    /// Enum for button sizes
-    /// </summary>
     public enum ButtonSize
     {
         Small,
@@ -210,9 +164,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.ViewModels
         Large
     }
 
-    /// <summary>
-    /// ViewModel for complete form with multiple fields
-    /// </summary>
     public class FormViewModel
     {
         public string Title { get; set; } = string.Empty;
@@ -225,9 +176,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.ViewModels
         public Dictionary<string, string>? HiddenFields { get; set; }
     }
 
-    /// <summary>
-    /// ViewModel for data table with pagination and actions
-    /// </summary>
     public class DataTableViewModel
     {
         public List<DataTableHeaderViewModel> Headers { get; set; } = new();
@@ -236,18 +184,12 @@ namespace NewsletterApp.API.Areas.Admin.Pages.ViewModels
         public string? CssClass { get; set; }
     }
 
-    /// <summary>
-    /// ViewModel for data table column header
-    /// </summary>
     public class DataTableHeaderViewModel
     {
         public string Label { get; set; } = string.Empty;
         public string? CssClass { get; set; }
     }
 
-    /// <summary>
-    /// ViewModel for data table row
-    /// </summary>
     public class DataTableRowViewModel
     {
         public List<DataTableCellViewModel> Cells { get; set; } = new();
@@ -255,9 +197,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.ViewModels
         public string? CssClass { get; set; }
     }
 
-    /// <summary>
-    /// ViewModel for data table cell
-    /// </summary>
     public class DataTableCellViewModel
     {
         public string Value { get; set; } = string.Empty;
@@ -265,9 +204,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.ViewModels
         public bool IsHtml { get; set; } = false;
     }
 
-    /// <summary>
-    /// ViewModel for table row actions (edit, delete, etc.)
-    /// </summary>
     public class TableActionViewModel
     {
         public string Label { get; set; } = string.Empty;
@@ -278,10 +214,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.ViewModels
         public string? ModalTarget { get; set; } // For triggering modals
     }
 
-    /// <summary>
-    /// ViewModel for alert messages (instead of TempData)
-    /// Optional: for more control over alerts in views
-    /// </summary>
     public class AlertViewModel
     {
         public string Message { get; set; } = string.Empty;
@@ -290,9 +222,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.ViewModels
         public bool Dismissible { get; set; } = true;
     }
 
-    /// <summary>
-    /// Enum for alert types
-    /// </summary>
     public enum AlertType
     {
         Success,
@@ -301,9 +230,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.ViewModels
         Info
     }
 
-    /// <summary>
-    /// ViewModel for Pagination component
-    /// </summary>
     public class PaginationViewModel
     {
         public int CurrentPage { get; set; } = 1;

@@ -11,10 +11,6 @@ using NewsletterApp.Domain.Interfaces;
 
 namespace NewsletterApp.Infrastructure.Services
 {
-    /// <summary>
-    /// Service for managing deleted (soft-deleted) items using the Repository pattern.
-    /// Strictly follows SOLID principles by depending on abstractions rather than concrete DbContext.
-    /// </summary>
     public class DeletedItemsService : IDeletedItemsService
     {
         private readonly ISubscriberRepository _subscriberRepository;
@@ -142,11 +138,6 @@ namespace NewsletterApp.Infrastructure.Services
                     if (category == null) return false;
                     category.IsDeleted = false;
                     category.DeletedAt = null;
-                    // We need a specific way to update category if it's not handled via LookupItem repository base
-                    // Assuming _lookupRepository has access to update category or we use context (but user wants repo)
-                    // Added AddCategoryAsync/UpdateCategoryAsync to repo? Let's check.
-                    // Actually I'll use the UpdateItemAsync if it's the same context but that's for LookupItem.
-                    // For now I'll assume ILookupRepository can handle Category updates if I add it.
                     await _lookupRepository.UpdateCategoryAsync(category);
                     break;
                 case "Newsletter":

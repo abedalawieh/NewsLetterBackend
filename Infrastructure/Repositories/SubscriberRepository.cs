@@ -48,6 +48,39 @@ namespace NewsletterApp.Infrastructure.Repositories
             }
         }
 
+        public async Task<List<Subscriber>> GetActiveSubscribersByInterestsAsync(IEnumerable<string> interests)
+        {
+            try
+            {
+                var interestList = interests?
+                    .Where(i => !string.IsNullOrWhiteSpace(i))
+                    .Select(i => i.Trim())
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList() ?? new List<string>();
+
+                if (interestList.Count == 0)
+                {
+                    return new List<Subscriber>();
+                }
+
+                var query = Entities.Where(s => s.IsActive);
+
+                query = query.Where(s =>
+                    EF.Functions.Like("," + EF.Property<string>(s, "CommunicationMethods") + ",", "%,Email,%"));
+
+                query = query.Where(s =>
+                    interestList.Any(interest =>
+                        EF.Functions.Like("," + EF.Property<string>(s, "Interests") + ",", "%," + interest + ",%")));
+
+                return await query.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting active subscribers by interests");
+                throw;
+            }
+        }
+
         public async Task<bool> EmailExistsAsync(string email)
         {
             try
@@ -83,7 +116,6 @@ namespace NewsletterApp.Infrastructure.Repositories
             {
                 var query = Entities;
 
-                #region Filtering
 
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
@@ -107,11 +139,9 @@ namespace NewsletterApp.Infrastructure.Repositories
                     query = query.Where(s => s.IsActive == isActive.Value);
                 }
 
-                #endregion
 
                 var totalCount = await query.CountAsync();
 
-                #region Sorting
 
                 switch (sortBy.ToLower())
                 {
@@ -129,7 +159,6 @@ namespace NewsletterApp.Infrastructure.Repositories
                         break;
                 }
 
-                #endregion
 
                 var items = await query
                     .Skip((pageNumber - 1) * pageSize)

@@ -15,7 +15,6 @@ namespace NewsletterApp.API.Migrations
     [Migration("20260201100216_AddNewsletterTargetingFields")]
     partial class AddNewsletterTargetingFields
     {
-        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618

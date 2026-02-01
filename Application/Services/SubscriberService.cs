@@ -5,21 +5,23 @@ using System.Threading.Tasks;
 using NewsletterApp.Application.DTOs;
 using NewsletterApp.Application.Interfaces;
 using NewsletterApp.Domain.Entities;
-using NewsletterApp.Domain.Interfaces;
 
 namespace NewsletterApp.Application.Services
 {
     public class SubscriberService : ISubscriberService
     {
         private readonly ISubscriberRepository _repository;
+        private readonly ILookupRepository _lookupRepository;
 
-        public SubscriberService(ISubscriberRepository repository)
+        public SubscriberService(ISubscriberRepository repository, ILookupRepository lookupRepository)
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            _lookupRepository = lookupRepository ?? throw new ArgumentNullException(nameof(lookupRepository));
         }
 
         public async Task<SubscriberResponseDto> CreateSubscriberAsync(CreateSubscriberDto dto)
         {
+            await ValidateLookupValuesAsync(dto);
             var existing = await _repository.GetByEmailAsync(dto.Email);
             if (existing != null)
             {
@@ -109,7 +111,7 @@ namespace NewsletterApp.Application.Services
 
             if (!subscriber.IsActive)
             {
-                 return true; // Already unsubscribed
+                 return true;
             }
 
             subscriber.Deactivate();
@@ -155,6 +157,53 @@ namespace NewsletterApp.Application.Services
                 UpdatedAt = subscriber.UpdatedAt,
                 IsActive = subscriber.IsActive
             };
+        }
+
+        private async Task ValidateLookupValuesAsync(CreateSubscriberDto dto)
+        {
+            if (dto == null) throw new ArgumentNullException(nameof(dto));
+
+            var typeItems = await _lookupRepository.GetItemsByCategoryAsync("SubscriberType");
+            var methodItems = await _lookupRepository.GetItemsByCategoryAsync("CommunicationMethod");
+            var interestItems = await _lookupRepository.GetItemsByCategoryAsync("Interest");
+
+            var typeSet = new HashSet<string>(
+                typeItems.Where(i => i.IsActive).Select(i => i.Value),
+                StringComparer.OrdinalIgnoreCase
+            );
+            var methodSet = new HashSet<string>(
+                methodItems.Where(i => i.IsActive).Select(i => i.Value),
+                StringComparer.OrdinalIgnoreCase
+            );
+            var interestSet = new HashSet<string>(
+                interestItems.Where(i => i.IsActive).Select(i => i.Value),
+                StringComparer.OrdinalIgnoreCase
+            );
+
+            if (string.IsNullOrWhiteSpace(dto.Type) || !typeSet.Contains(dto.Type))
+            {
+                throw new ArgumentException("Invalid subscriber type");
+            }
+
+            if (dto.CommunicationMethods == null || dto.CommunicationMethods.Count == 0)
+            {
+                throw new ArgumentException("At least one communication method is required");
+            }
+
+            if (dto.CommunicationMethods.Any(m => string.IsNullOrWhiteSpace(m) || !methodSet.Contains(m)))
+            {
+                throw new ArgumentException("Invalid communication method");
+            }
+
+            if (dto.Interests == null || dto.Interests.Count == 0)
+            {
+                throw new ArgumentException("At least one interest is required");
+            }
+
+            if (dto.Interests.Any(i => string.IsNullOrWhiteSpace(i) || !interestSet.Contains(i)))
+            {
+                throw new ArgumentException("Invalid interest");
+            }
         }
     }
 }

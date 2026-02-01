@@ -8,7 +8,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Account
 {
     public class LoginModel : PageModel
     {
-        #region Dependencies
 
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -19,9 +18,7 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Account
             _userManager = userManager;
         }
 
-        #endregion
 
-        #region Properties
 
         [BindProperty]
         [Required(ErrorMessage = "Username is required")]
@@ -34,9 +31,7 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Account
 
         public string ReturnUrl { get; set; }
 
-        #endregion
 
-        #region Handlers
 
         public IActionResult OnGet(string returnUrl = null)
         {
@@ -53,14 +48,11 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Account
 
             if (!ModelState.IsValid) return Page();
 
-            #region Authentication Logic
 
-            // Use the standard SignInManager which is more reliable
             var result = await _signInManager.PasswordSignInAsync(Username, Password, isPersistent: true, lockoutOnFailure: false);
 
             if (result.Succeeded)
             {
-                // Verify the user has Admin role and is active
                 var user = await _userManager.FindByNameAsync(Username);
                 
                 if (user != null && !user.IsActive)
@@ -80,7 +72,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Account
                 }
 
 
-                // If no returnUrl, go to Dashboard explicitly
                 if (string.IsNullOrEmpty(returnUrl) || !Url.IsLocalUrl(returnUrl))
                 {
                     return RedirectToPage("/Dashboard", new { area = "Admin" });
@@ -99,11 +90,9 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Account
                 ModelState.AddModelError(string.Empty, "Invalid login attempt. Please check your credentials.");
             }
 
-            #endregion
 
             return Page();
         }
 
-        #endregion
     }
 }

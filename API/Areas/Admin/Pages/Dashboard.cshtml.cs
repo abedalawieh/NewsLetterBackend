@@ -21,7 +21,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages
             _unsubscribeAnalytics = unsubscribeAnalytics;
         }
 
-        #region stats
 
         public int TotalSubscribers { get; set; }
         public int ActiveSubscribers { get; set; }
@@ -29,10 +28,8 @@ namespace NewsletterApp.API.Areas.Admin.Pages
         
         public IReadOnlyList<UnsubscribeStatDto> UnsubscribeReasons { get; set; }
         public List<SubscriptionHistory> RecentActivity { get; set; }
-        /// <summary>Recent unsubscribe history (who, reason, comment) for home page analytics.</summary>
         public IReadOnlyList<UnsubscribeHistoryDto> RecentUnsubscribes { get; set; }
 
-        #endregion
 
         public async Task OnGetAsync()
         {

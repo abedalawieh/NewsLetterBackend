@@ -54,14 +54,12 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Newsletters
 
             var interests = TargetInterests?.ToList() ?? new List<string>();
             
-            // Create newsletter (no subscriber type targeting)
             var newsletter = await _newsletterService.CreateDraftAsync(
                 Input.Title,
                 Input.Content,
                 interests
             );
 
-            // Template is auto-selected per recipient; no explicit template stored here.
 
             TempData["SuccessMessage"] = "Newsletter draft created successfully!";
             return RedirectToPage("Index");
@@ -70,8 +68,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Newsletters
         private async Task LoadLookupsAsync()
         {
             AvailableInterests = await _lookupService.GetItemsByCategoryAsync("Interest");
-            // Subscriber types UI removed; no lookup required
-            // Templates are auto-selected per recipient; no need to load template list here.
         }
     }
 }

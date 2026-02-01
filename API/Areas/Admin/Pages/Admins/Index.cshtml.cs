@@ -33,7 +33,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Admins
         {
             var allAdmins = _userManager.Users.OrderByDescending(u => u.CreatedAt).ToList();
             
-            // Calculate pagination
             var totalItems = allAdmins.Count;
             var totalPages = (int)Math.Ceiling(totalItems / (double)PageSize);
             Administrators = allAdmins.Skip((PageNumber - 1) * PageSize).Take(PageSize).ToList();
@@ -48,17 +47,11 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Admins
             };
         }
 
-        /// <summary>
-        /// Returns true if the username is the protected system admin (cannot be disabled or have password changed by others).
-        /// </summary>
         public bool IsSystemAdmin(string username)
         {
             return string.Equals(username, "admin", StringComparison.OrdinalIgnoreCase);
         }
 
-        /// <summary>
-        /// Returns true if the current logged-in user is the system admin.
-        /// </summary>
         public bool IsCurrentUserSystemAdmin()
         {
             var name = User.Identity?.Name;
@@ -78,7 +71,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Admins
                     return RedirectToPage();
                 }
 
-                // Toggle active status
                 user.IsActive = !user.IsActive;
                 var result = await _userManager.UpdateAsync(user);
 

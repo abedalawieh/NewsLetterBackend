@@ -39,7 +39,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Subscribers
             var allSubscribers = await _subscriberService.GetAllSubscribersAsync();
             var subscriberList = allSubscribers.ToList();
 
-            // Apply filters
             if (!string.IsNullOrEmpty(SearchTerm))
             {
                 subscriberList = subscriberList
@@ -56,12 +55,10 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Subscribers
                     : subscriberList.Where(s => !s.IsActive).ToList();
             }
 
-            // Calculate pagination
             var totalItems = subscriberList.Count;
             var totalPages = (int)Math.Ceiling(totalItems / (double)PageSize);
             Subscribers = subscriberList.Skip((PageNumber - 1) * PageSize).Take(PageSize).ToList();
 
-            // Ensure valid page number
             if (PageNumber < 1) PageNumber = 1;
             if (PageNumber > totalPages && totalPages > 0) PageNumber = totalPages;
 

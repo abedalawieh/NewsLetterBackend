@@ -9,6 +9,7 @@ namespace NewsletterApp.Application.Interfaces
     {
         Task<Subscriber> GetByEmailAsync(string email);
         Task<IEnumerable<Subscriber>> GetActiveSubscribersAsync();
+        Task<List<Subscriber>> GetActiveSubscribersByInterestsAsync(IEnumerable<string> interests);
         Task<bool> EmailExistsAsync(string email);
         Task AddHistoryAsync(SubscriptionHistory history);
         Task<(IEnumerable<Subscriber> Items, int TotalCount)> GetPagedAsync(

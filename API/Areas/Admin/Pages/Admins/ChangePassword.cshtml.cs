@@ -8,7 +8,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Admins
 {
     public class ChangePasswordModel : PageModel
     {
-        #region Dependencies
 
         private readonly UserManager<ApplicationUser> _userManager;
 
@@ -17,17 +16,13 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Admins
             _userManager = userManager;
         }
 
-        #endregion
 
-        #region Properties
 
         [BindProperty] public string UserId { get; set; }
         [BindProperty][Required][MinLength(6)] public string NewPassword { get; set; }
         public string TargetUsername { get; set; }
 
-        #endregion
 
-        #region Handlers
 
         private static bool IsSystemAdmin(string username) =>
             string.Equals(username, "admin", StringComparison.OrdinalIgnoreCase);
@@ -37,7 +32,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Admins
             var user = await _userManager.FindByIdAsync(id);
             if (user == null) return NotFound();
 
-            // Only the system admin can change their own password; others cannot
             if (IsSystemAdmin(user.UserName))
             {
                 var currentUser = await _userManager.GetUserAsync(User);
@@ -60,7 +54,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Admins
             var user = await _userManager.FindByIdAsync(UserId);
             if (user == null) return NotFound();
 
-            // Only the system admin can change their own password; others cannot
             if (IsSystemAdmin(user.UserName))
             {
                 var currentUser = await _userManager.GetUserAsync(User);
@@ -71,7 +64,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Admins
                 }
             }
 
-            #region Reset Password
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var result = await _userManager.ResetPasswordAsync(user, token, NewPassword);
@@ -87,13 +79,11 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Admins
                 ModelState.AddModelError(string.Empty, error.Description);
             }
 
-            #endregion
 
             TargetUsername = user.UserName;
             return Page();
         }
 
-        #endregion
     }
 }
 

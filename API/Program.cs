@@ -16,7 +16,6 @@ using NewsletterApp.API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
-#region Services Configuration
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages(options =>
@@ -31,9 +30,7 @@ builder.Services.AddWebOptimizer(pipeline =>
     pipeline.AddJavaScriptBundle("/js/admin.min.js", "js/admin.js");
 });
 
-#endregion
 
-#region Database & Identity
 
 builder.Services.AddDbContext<NewsletterDbContext>(options =>
     options.UseSqlServer(
@@ -60,9 +57,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.Name = "NewsletterAdminAuth";
 });
 
-#endregion
 
-#region Authentication & Security
 
 builder.Services.AddCors(options =>
 {
@@ -79,15 +74,12 @@ builder.Services.AddCors(options =>
     });
 });
 
-#endregion
 
-#region Dependency Injection
 
 builder.Services.AddScoped<ISubscriberRepository, SubscriberRepository>();
 builder.Services.AddScoped<ILookupRepository, LookupRepository>();
 builder.Services.AddScoped<INewsletterRepository, NewsletterRepository>();
 
-// Infrastructure Services
 builder.Services.AddScoped<IEmailTemplateService, EmailTemplateService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
@@ -99,9 +91,7 @@ builder.Services.AddScoped<IDeletedItemsService, DeletedItemsService>();
 builder.Services.AddScoped<IUnsubscribeAnalyticsService, UnsubscribeAnalyticsService>();
 builder.Services.AddScoped<IDatabaseSeeder, DatabaseSeeder>();
 
-#endregion
 
-#region Infrastructure
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -111,11 +101,9 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddHealthChecks().AddDbContextCheck<NewsletterDbContext>();
 
-#endregion
 
 var app = builder.Build();
 
-#region Middleware Pipeline
 
 if (app.Environment.IsDevelopment())
 {
@@ -135,9 +123,7 @@ app.UseCors("AllowReactApp");
 app.UseAuthentication(); 
 app.UseAuthorization();
 
-#endregion
 
-#region Endpoints
 
 app.MapControllerRoute(
     name: "areas",
@@ -150,9 +136,7 @@ app.MapControllerRoute(
 app.MapRazorPages();
 app.MapHealthChecks("/health");
 
-#endregion
 
-#region Database Initialization
 
 using (var scope = app.Services.CreateScope())
 {
@@ -160,6 +144,5 @@ using (var scope = app.Services.CreateScope())
     await seeder.SeedAsync();
 }
 
-#endregion
 
 app.Run();

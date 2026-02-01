@@ -99,7 +99,6 @@ namespace NewsletterApp.Domain.Entities
         public Guid SubscriberId { get; set; }
         public string Action { get; set; } // Subscribe, Unsubscribe
         public string Reason { get; set; }
-        /// <summary>Optional free-text comment (e.g. for unsubscribe feedback).</summary>
         public string Comment { get; set; }
         public DateTime Timestamp { get; set; }
 
@@ -116,7 +115,7 @@ namespace NewsletterApp.Domain.Entities
                 SubscriberId = subscriberId,
                 Action = action,
                 Reason = reason ?? "",
-                Comment = comment,
+                Comment = comment ?? "",
                 Timestamp = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow
             };

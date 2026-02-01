@@ -15,7 +15,6 @@ namespace NewsletterApp.API.Migrations
     [Migration("20260201085249_AddSubscriptionHistoryComment")]
     partial class AddSubscriptionHistoryComment
     {
-        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618

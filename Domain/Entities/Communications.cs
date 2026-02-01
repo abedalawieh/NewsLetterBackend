@@ -9,10 +9,7 @@ namespace NewsletterApp.Domain.Entities
         public Guid Id { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }
-        public string TargetInterests { get; set; } // Comma separated or JSON
-        /// <summary>
-        /// Specific template to use (null for auto-selection based on interests)
-        /// </summary>
+        public string TargetInterests { get; set; }
         public string TemplateName { get; set; } = string.Empty;
         public DateTime? SentAt { get; set; }
         public bool IsDraft { get; set; }

@@ -1,6 +1,6 @@
-/* Admin Dashboard Infrastructure Styles */
+
 :root {
-    /* Main Theme Colors */
+    
     --admin-primary: #0ea5e9;
     --admin-primary-hover: #38bdf8;
     --admin-bg-dark: #0a0f1d;
@@ -10,13 +10,13 @@
     --admin-text: #f8fafc;
     --admin-text-muted: #cbd5e1;
 
-    /* Semantic Colors */
+    
     --admin-success: #22c55e;
     --admin-danger: #ef4444;
     --admin-warning: #f59e0b;
 }
 
-/* Global Transitions & Defaults */
+
 body.admin-body {
     background-color: var(--admin-bg-dark);
     color: var(--admin-text);
@@ -25,7 +25,7 @@ body.admin-body {
     line-height: 1.6;
 }
 
-/* Layout - Sidebar & Main Content */
+
 .sidebar {
     height: 100vh;
     background: var(--admin-sidebar-bg);
@@ -41,7 +41,7 @@ body.admin-body {
     padding: 2.5rem;
 }
 
-/* Navigation Links */
+
 .nav-link {
     color: #94a3b8;
     padding: 0.8rem 1.25rem;
@@ -70,7 +70,7 @@ body.admin-body {
     font-size: 1.1rem;
 }
 
-/* Components - Cards & Stats */
+
 .card {
     background: var(--admin-card-bg);
     border: 1px solid var(--admin-card-border);
@@ -96,7 +96,7 @@ body.admin-body {
     letter-spacing: 0.025em;
 }
 
-/* Data Display - Tables */
+
 .table {
     color: var(--admin-text);
     vertical-align: middle;
@@ -117,7 +117,7 @@ body.admin-body {
     border-bottom: 1px solid var(--admin-card-border);
     padding: 1.25rem 1rem;
     color: var(--admin-text) !important;
-    /* Force visibility */
+    
     background: transparent !important;
 }
 
@@ -126,7 +126,7 @@ body.admin-body {
     color: white;
 }
 
-/* Action Elements - Buttons & Badges */
+
 .btn-primary {
     background: var(--admin-primary) !important;
     border-color: var(--admin-primary) !important;
@@ -174,7 +174,7 @@ body.admin-body {
     letter-spacing: 0.01em;
 }
 
-/* Override Bootstrap opacity classes for dark mode readability */
+
 .bg-opacity-10 {
     background-color: rgba(255, 255, 255, 0.05) !important;
 }
@@ -195,7 +195,7 @@ body.admin-body {
     color: #ffffff;
 }
 
-/* Code & Content Blocks */
+
 .bg-dark {
     background-color: #020617 !important;
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -206,7 +206,7 @@ pre {
     font-family: 'Fira Code', 'Consolas', monospace !important;
 }
 
-/* Alerts */
+
 .alert-success {
     --bs-alert-color: #4ade80;
     --bs-alert-bg: rgba(34, 197, 94, 0.1);
@@ -219,7 +219,7 @@ pre {
     border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
-/* Forms & Inputs visibility fixes */
+
 .form-control,
 .form-select {
     background-color: var(--admin-bg-dark);
@@ -238,11 +238,11 @@ pre {
     box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
 }
 
-/* Fix for black placeholders */
+
 .form-control::placeholder {
     color: #64748b !important;
     opacity: 1;
-    /* Firefox */
+    
 }
 
 :-ms-input-placeholder {
@@ -253,7 +253,7 @@ pre {
     color: #64748b !important;
 }
 
-/* Premium Checkbox/Radio Blocks (to match screenshot) */
+
 .premium-form-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -266,7 +266,7 @@ pre {
     display: flex;
     align-items: center;
     background: #ffffff;
-    /* As seen in screenshot */
+    
     border: 2px solid transparent;
     border-radius: 1rem;
     padding: 1.25rem;
@@ -290,7 +290,7 @@ pre {
 
 .premium-check-label {
     color: #1e293b;
-    /* Dark text on white background */
+    
     font-weight: 600;
     font-size: 1rem;
     margin-bottom: 0;
@@ -298,13 +298,13 @@ pre {
     flex-grow: 1;
 }
 
-/* Selected state for premium blocks */
+
 .premium-check-item.selected {
     border-color: var(--admin-primary);
     background: #f0f9ff;
 }
 
-/* Typography Helpers */
+
 .text-uppercase-label {
     font-size: 0.75rem;
     text-transform: uppercase;
@@ -315,7 +315,7 @@ pre {
     display: block;
 }
 
-/* Custom Scrollbar for Admin Intelligence */
+
 ::-webkit-scrollbar {
     width: 6px;
 }

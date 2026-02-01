@@ -60,7 +60,7 @@
             </form>
         </div>
 
-        <!-- Template Preview Info -->
+        
                 <div class="card mt-4 p-4">
             <h5 class="text-secondary mb-3"><i class="fas fa-info-circle me-2"></i>Template Selection Logic</h5>
             <ul class="text-secondary small mb-0">
@@ -75,7 +75,6 @@
 
 @section Scripts {
     <script>
-        // Real-time selection highlighting
         document.querySelectorAll('.premium-check-input').forEach(input => {
             input.addEventListener('change', function() {
                 const isRadio = this.type === 'radio';
@@ -94,7 +93,6 @@
                 }
             });
             
-            // Initial state
             if (input.checked) {
                 input.closest('.premium-check-item').classList.add('selected');
             }

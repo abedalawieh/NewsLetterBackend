@@ -4,10 +4,8 @@
 
 namespace NewsletterApp.API.Migrations
 {
-    /// <inheritdoc />
     public partial class AddIsSystemToLookups : Migration
     {
-        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<bool>(
@@ -25,7 +23,6 @@ namespace NewsletterApp.API.Migrations
                 defaultValue: false);
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(

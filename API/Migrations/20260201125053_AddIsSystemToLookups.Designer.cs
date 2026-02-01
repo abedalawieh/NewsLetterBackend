@@ -15,7 +15,6 @@ namespace NewsletterApp.API.Migrations
     [Migration("20260201125053_AddIsSystemToLookups")]
     partial class AddIsSystemToLookups
     {
-        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618

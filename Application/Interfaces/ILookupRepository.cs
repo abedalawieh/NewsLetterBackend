@@ -19,7 +19,6 @@ namespace NewsletterApp.Application.Interfaces
         Task<LookupItem> UpdateItemAsync(LookupItem item);
         Task<bool> DeleteItemAsync(Guid id);
         
-        // New methods for Category management
         Task<LookupCategory> AddCategoryAsync(LookupCategory category);
         Task UpdateCategoryAsync(LookupCategory category);
         Task<bool> DeleteCategoryAsync(Guid id);

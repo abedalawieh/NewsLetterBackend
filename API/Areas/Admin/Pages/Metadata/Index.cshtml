@@ -10,7 +10,7 @@
     .category-header { background: rgba(14, 165, 233, 0.08); border-left: 4px solid var(--accent, #0ea5e9); }
 </style>
 
-<!-- Page Header -->
+
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h1 class="h3 fw-bold">System Metadata</h1>
@@ -97,7 +97,7 @@
                     }).ToList()
                 };
                 
-                <!-- Render Table Inline -->
+                
                 <div class="table-responsive">
                     <table class="table table-hover mb-0">
                         <thead>
@@ -131,13 +131,13 @@
                                         }
                                     </td>
                                     <td class="text-end pe-4">
-                                        @* Edit Button - Always allowed *@
+                                        
                                         <button type="button" class="btn btn-sm btn-info rounded-pill px-2" 
                                             onclick="openEditModal('@item.Id', '@category.Name', '@item.Value', '@item.Label', '@item.SortOrder', '@item.IsActive');" title="Edit">
                                             <i class="fas fa-edit"></i>
                                         </button>
 
-                                        @* Toggle Status - Always allowed *@
+                                        
                                         <button type="button" class="btn btn-sm btn-@(item.IsActive ? "warning" : "success") rounded-pill px-2" 
                                             onclick="document.getElementById('toggleForm-@item.Id').submit();" title="@(item.IsActive ? "Deactivate" : "Activate")">
                                             <i class="fas @(item.IsActive ? "fa-power-off" : "fa-play")"></i>
@@ -159,7 +159,7 @@
     }
 }
 
-<!-- Hidden Toggle Forms -->
+
 @if (Model.Categories != null)
 {
     @foreach (var category in Model.Categories)
@@ -171,7 +171,7 @@
     }
 }
 
-<!-- Edit Modal -->
+
 <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content bg-dark border border-secondary text-white">
@@ -183,8 +183,7 @@
                 <div class="modal-body">
                     <input type="hidden" id="editItemId" asp-for="EditItemId" />
                     <input type="hidden" id="editCategory" /> 
-                    <!-- We don't bind category/value on edit typically if they are immutable, but DTO might need them if validation requires. 
-                         UpdateLookupDto only has Label, SortOrder, IsActive. -->
+                    
                     
                     <div class="mb-3">
                         <label class="form-label text-secondary small">Value (Code)</label>

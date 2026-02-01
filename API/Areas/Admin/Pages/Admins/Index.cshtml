@@ -85,7 +85,7 @@
     </div>
 </div>
 
-<!-- Pagination -->
+
 @if (Model.Pagination?.TotalPages > 1)
 {
     <nav aria-label="Page navigation" class="mt-4">
@@ -109,7 +109,7 @@
     </nav>
 }
 
-<!-- Toggle Status Forms (only for non-system admins) -->
+
 @foreach (var admin in Model.Administrators)
 {
     @if (!Model.IsSystemAdmin(admin.UserName))

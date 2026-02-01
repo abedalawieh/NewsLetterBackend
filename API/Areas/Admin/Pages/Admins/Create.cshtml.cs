@@ -8,7 +8,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Admins
 {
     public class CreateModel : PageModel
     {
-        #region Dependencies
 
         private readonly UserManager<ApplicationUser> _userManager;
 
@@ -17,9 +16,7 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Admins
             _userManager = userManager;
         }
 
-        #endregion
 
-        #region Properties
 
         [BindProperty]
         public InputModel Input { get; set; }
@@ -33,9 +30,7 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Admins
             [Required][MinLength(6)] public string Password { get; set; }
         }
 
-        #endregion
 
-        #region Handlers
 
         public void OnGet() { }
 
@@ -43,7 +38,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Admins
         {
             if (!ModelState.IsValid) return Page();
 
-            #region Create User
 
             var user = new ApplicationUser
             {
@@ -68,12 +62,10 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Admins
                 ModelState.AddModelError(string.Empty, error.Description);
             }
 
-            #endregion
 
             return Page();
         }
 
-        #endregion
     }
 }
 

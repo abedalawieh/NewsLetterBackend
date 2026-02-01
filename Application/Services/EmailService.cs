@@ -10,11 +10,6 @@ using System.Threading.Tasks;
 
 namespace NewsletterApp.Application.Services
 {
-    /// <summary>
-    /// Email Service implementation
-    /// Uses the Strategy pattern for template selection
-    /// Follows Single Responsibility Principle - focused only on email sending
-    /// </summary>
     public class EmailService : IEmailService
     {
         private readonly IConfiguration _config;
@@ -83,10 +78,8 @@ namespace NewsletterApp.Application.Services
             var frontendUrl = _config["EmailSettings:FrontendBaseUrl"] ?? "http://localhost:5173";
             var unsubscribeLink = $"{frontendUrl}/unsubscribe?email={Uri.EscapeDataString(to)}";
 
-            // Use specified template or fall back to generic
             var template = string.IsNullOrWhiteSpace(templateName) ? "GenericNewsletter" : templateName;
 
-            // Build the context dictionary for template rendering
             var context = new Dictionary<string, string>
             {
                 { "Subject", subject },

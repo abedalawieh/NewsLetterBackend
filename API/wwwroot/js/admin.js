@@ -1,6 +1,4 @@
-/**
- * Admin Dashboard Core Logic
- */
+
 const AdminApp = (() => {
     const init = () => {
         console.log('Admin Intelligence System Initialized');

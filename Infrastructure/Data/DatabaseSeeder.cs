@@ -34,7 +34,6 @@ namespace NewsletterApp.Infrastructure.Data
         {
             await _context.Database.MigrateAsync();
 
-            #region Roles Seeding
 
             if (!await _roleManager.RoleExistsAsync("Admin"))
                 await _roleManager.CreateAsync(new ApplicationRole { Name = "Admin", Description = "Administrator" });
@@ -42,9 +41,7 @@ namespace NewsletterApp.Infrastructure.Data
             if (!await _roleManager.RoleExistsAsync("User"))
                 await _roleManager.CreateAsync(new ApplicationRole { Name = "User", Description = "Standard User" });
 
-            #endregion
 
-            #region Admin User Seeding
 
             var adminUser = await _userManager.FindByNameAsync("admin");
             if (adminUser == null)
@@ -63,9 +60,7 @@ namespace NewsletterApp.Infrastructure.Data
                 await _userManager.AddToRoleAsync(adminUser, "Admin");
             }
 
-            #endregion
 
-            #region Metadata Lookups Seeding
 
             if (!await _context.LookupCategories.AnyAsync())
             {
@@ -95,7 +90,6 @@ namespace NewsletterApp.Infrastructure.Data
             }
             else
             {
-                // Update existing core items to be system items if they aren't already
                 var systemCategoryNames = new[] { "SubscriberType", "CommunicationMethod", "Interest" };
                 var systemCategories = await _context.LookupCategories
                     .IgnoreQueryFilters()
@@ -114,7 +108,6 @@ namespace NewsletterApp.Infrastructure.Data
                 await _context.SaveChangesAsync();
             }
 
-            #endregion
         }
     }
 }

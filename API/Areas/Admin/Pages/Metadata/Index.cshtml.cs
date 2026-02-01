@@ -32,7 +32,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Metadata
         {
             Categories = await _lookupService.GetAllCategoriesAsync();
             
-            // Initialize page header
             PageHeader = new PageHeaderViewModel
             {
                 Title = "Metadata Management",

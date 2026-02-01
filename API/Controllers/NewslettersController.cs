@@ -1,5 +1,5 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NewsletterApp.Application.DTOs;
 using NewsletterApp.Application.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -19,28 +19,7 @@ namespace NewsletterApp.API.Controllers
             _newsletterService = newsletterService;
         }
 
-        /// <summary>
-        /// Preview rendered template for a specific subscriber (admin preview)
-        /// </summary>
-        [HttpPost("preview")]
-        public async Task<ActionResult<string>> PreviewTemplate([FromBody] PreviewRequest request)
-        {
-            try
-            {
-                var html = await _newsletterService.RenderTemplateForRecipientAsync(request.NewsletterId, request.SubscriberId, request.TemplateName);
-                return Content(html, "text/html");
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new { message = ex.Message });
-            }
-        }
-
-        /// <summary>
-        /// Get all newsletters (public - for subscription flow)
-        /// </summary>
         [HttpGet]
-        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<NewsletterListDto>>> GetNewsletters()
         {
             var newsletters = await _newsletterService.GetHistoryAsync();
@@ -61,11 +40,7 @@ namespace NewsletterApp.API.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Get a specific newsletter by ID (public - for viewing published newsletters)
-        /// </summary>
         [HttpGet("{id:guid}")]
-        [AllowAnonymous]
         public async Task<ActionResult<NewsletterDetailDto>> GetNewsletterById(Guid id)
         {
             var newsletter = await _newsletterService.GetByIdAsync(id);
@@ -75,8 +50,6 @@ namespace NewsletterApp.API.Controllers
                 return NotFound(new { message = "Newsletter not found" });
             }
 
-            // Only return published newsletters to public
-            // Drafts should only be visible to admins
             
             return Ok(new NewsletterDetailDto
             {
@@ -90,35 +63,5 @@ namespace NewsletterApp.API.Controllers
                 CreatedAt = newsletter.CreatedAt,
             });
         }
-    }
-
-    public class NewsletterListDto
-    {
-        public Guid Id { get; set; }
-        public string Title { get; set; } = "";
-        public string TargetInterests { get; set; } = "";
-        public string TemplateName { get; set; }
-        public bool IsDraft { get; set; }
-        public DateTime? SentAt { get; set; }
-        public DateTime CreatedAt { get; set; }
-    }
-
-    public class NewsletterDetailDto
-    {
-        public Guid Id { get; set; }
-        public string Title { get; set; } = "";
-        public string Content { get; set; } = "";
-        public string TargetInterests { get; set; } = "";
-        public string TemplateName { get; set; }
-        public bool IsDraft { get; set; }
-        public DateTime? SentAt { get; set; }
-        public DateTime CreatedAt { get; set; }
-    }
-
-    public class PreviewRequest
-    {
-        public Guid NewsletterId { get; set; }
-        public Guid SubscriberId { get; set; }
-        public string TemplateName { get; set; }
     }
 }

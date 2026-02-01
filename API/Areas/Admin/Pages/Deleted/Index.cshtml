@@ -2,7 +2,7 @@
 @using NewsletterApp.API.Areas.Admin.Pages.ViewModels
 @model NewsletterApp.API.Areas.Admin.Pages.Deleted.IndexModel
 @{
-    ViewData["Title"] = "Deleted Items";
+    ViewData["Title"] = "Deleted Newsletters";
 }
 
 <style>
@@ -12,249 +12,16 @@
     .restore-btn:hover { background: #10b981; color: white; }
 </style>
 
-<!-- Page Header -->
+
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h1 class="h3 fw-bold">Deleted Items Management</h1>
-        <p class="text-secondary small">View and manage soft-deleted items. You can restore or permanently delete them.</p>
+        <h1 class="h3 fw-bold">Deleted Newsletters</h1>
+        <p class="text-secondary small">View and manage soft-deleted newsletters. You can restore or permanently delete them.</p>
     </div>
 </div>
 
-@if (Model.ReplaceAndDeleteInfo != null)
-{
-    var info = Model.ReplaceAndDeleteInfo;
-    <div class="alert alert-warning d-flex align-items-start mb-4" role="alert">
-        <i class="fas fa-exchange-alt me-3 mt-1"></i>
-        <div class="flex-grow-1">
-            <h6 class="alert-heading mb-2">Replace and Delete</h6>
-            <p class="mb-2">The item <strong>@info.ItemLabel</strong> has <strong>@info.SubscriberCount</strong> subscriber(s) using it. Select a replacement option to migrate them, then permanently delete.</p>
-            <form method="post" asp-page-handler="ReplaceAndDelete" class="d-flex gap-2 align-items-end flex-wrap">
-                <input type="hidden" name="id" value="@info.ItemId" />
-                <input type="hidden" name="category" value="@info.Category" />
-                <input type="hidden" name="oldValue" value="@info.OldValue" />
-                <div class="flex-grow-1" style="min-width: 200px;">
-                    <label class="form-label small text-secondary">Replacement</label>
-                    <select name="newValue" class="form-select form-select-sm bg-dark text-white border-secondary" required>
-                        <option value="">-- Select replacement --</option>
-                        @foreach (var opt in info.Replacements)
-                        {
-                            <option value="@opt.Value">@opt.Label</option>
-                        }
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-danger btn-sm">
-                    <i class="fas fa-exchange-alt me-1"></i> Replace & Permanently Delete
-                </button>
-                <a href="?ItemType=@Model.ItemType" class="btn btn-outline-secondary btn-sm">Cancel</a>
-            </form>
-        </div>
-    </div>
-}
 
-<!-- Filter Tabs -->
-<div class="mb-4">
-    <div class="btn-group" role="group">
-        <a href="?ItemType=All" class="btn @(Model.ItemType == "All" || Model.ItemType == null ? "btn-primary" : "btn-outline-secondary")">
-            <i class="fas fa-list me-2"></i> All (@(Model.DeletedItems.Count + Model.DeletedMetadata.Count + Model.DeletedNewsletters.Count))
-        </a>
-        <a href="?ItemType=Subscriber" class="btn @(Model.ItemType == "Subscriber" ? "btn-primary" : "btn-outline-secondary")">
-            <i class="fas fa-users me-2"></i> Subscribers (@Model.DeletedItems.Count)
-        </a>
-        <a href="?ItemType=Metadata" class="btn @(Model.ItemType == "Metadata" ? "btn-primary" : "btn-outline-secondary")">
-            <i class="fas fa-tags me-2"></i> Metadata (@Model.DeletedMetadata.Count)
-        </a>
-        <a href="?ItemType=Newsletter" class="btn @(Model.ItemType == "Newsletter" ? "btn-primary" : "btn-outline-secondary")">
-            <i class="fas fa-envelopes-bulk me-2"></i> Newsletters (@Model.DeletedNewsletters.Count)
-        </a>
-    </div>
-</div>
-
-<!-- Deleted Subscribers -->
-@if ((Model.ItemType == "All" || Model.ItemType == "Subscriber") && Model.DeletedItems.Any())
-{
-    <div class="card overflow-hidden mb-4">
-        <div class="card-header bg-danger bg-opacity-10 border-danger p-4">
-            <h5 class="text-danger fw-bold mb-0">
-                <i class="fas fa-users me-2"></i> Deleted Subscribers (@Model.DeletedItems.Count)
-            </h5>
-        </div>
-        <div class="table-responsive">
-            <table class="table mb-0">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Details</th>
-                        <th>Deleted At</th>
-                        <th class="text-end pe-4">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.DeletedItemsPaged.Items.OrderByDescending(i => i.DeletedAt))
-                    {
-                        <tr class="deleted-item-card">
-                            <td class="ps-4">
-                                <div class="fw-bold text-white">@item.Name</div>
-                            </td>
-                            <td>
-                                <span class="text-secondary small">@item.Email</span>
-                            </td>
-                            <td>
-                                <span class="badge bg-secondary bg-opacity-50">@item.Details</span>
-                            </td>
-                            <td>
-                                <span class="text-secondary small">
-                                    @item.DeletedAt.ToString("MMM dd, yyyy HH:mm")
-                                </span>
-                            </td>
-                            <td class="text-end pe-4">
-                                <form method="post" asp-page-handler="Restore" asp-route-id="@item.Id" asp-route-type="Subscriber" class="d-inline">
-                                    <button type="submit" class="btn btn-sm restore-btn rounded-pill px-3">
-                                        <i class="fas fa-undo me-1"></i> Restore
-                                    </button>
-                                </form>
-                                <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-2" onclick="openDeleteModal('@item.Id', '@item.Name', 'Subscriber')">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-        
-        <!-- Pagination for Subscribers -->
-        @{
-            var totalPages = Math.Ceiling((double)Model.DeletedItemsPaged.TotalItems / Model.DeletedItemsPaged.PageSize);
-        }
-        @if (totalPages > 1)
-        {
-            <nav aria-label="Page navigation" class="mt-3">
-                <ul class="pagination justify-content-center">
-                    @if (Model.DeletedItemsPaged.CurrentPage > 1)
-                    {
-                        <li class="page-item">
-                            <a class="page-link" href="?ItemType=@Model.ItemType&PageNumber=1">First</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="?ItemType=@Model.ItemType&PageNumber=@(Model.DeletedItemsPaged.CurrentPage - 1)">Previous</a>
-                        </li>
-                    }
-                    <li class="page-item active">
-                        <span class="page-link">Page @Model.DeletedItemsPaged.CurrentPage of @totalPages</span>
-                    </li>
-                    @if (Model.DeletedItemsPaged.CurrentPage < totalPages)
-                    {
-                        <li class="page-item">
-                            <a class="page-link" href="?ItemType=@Model.ItemType&PageNumber=@(Model.DeletedItemsPaged.CurrentPage + 1)">Next</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="?ItemType=@Model.ItemType&PageNumber=@totalPages">Last</a>
-                        </li>
-                    }
-                </ul>
-            </nav>
-        }
-    </div>
-}
-
-<!-- Deleted Metadata -->
-@if ((Model.ItemType == "All" || Model.ItemType == "Metadata") && Model.DeletedMetadata.Any())
-{
-    <div class="card overflow-hidden mb-4">
-        <div class="card-header bg-danger bg-opacity-10 border-danger p-4">
-            <h5 class="text-danger fw-bold mb-0">
-                <i class="fas fa-tags me-2"></i> Deleted Metadata (@Model.DeletedMetadata.Count)
-            </h5>
-        </div>
-        <div class="table-responsive">
-            <table class="table mb-0">
-                <thead>
-                    <tr>
-                        <th>Type</th>
-                        <th>Name</th>
-                        <th>Value/Code</th>
-                        <th>Category</th>
-                        <th>Deleted At</th>
-                        <th class="text-end pe-4">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.DeletedMetadataPaged.Items.OrderByDescending(i => i.DeletedAt))
-                    {
-                        <tr class="deleted-item-card">
-                            <td class="ps-4">
-                                <span class="badge bg-indigo-500 bg-opacity-10">
-                                    @item.Type
-                                </span>
-                            </td>
-                            <td>
-                                <span class="text-white fw-semibold">@item.Name</span>
-                            </td>
-                            <td>
-                                <span class="badge bg-secondary bg-opacity-50 font-monospace">@item.Value</span>
-                            </td>
-                            <td>
-                                <span class="text-secondary small">@item.Category</span>
-                            </td>
-                            <td>
-                                <span class="text-secondary small">
-                                    @item.DeletedAt.ToString("MMM dd, yyyy HH:mm")
-                                </span>
-                            </td>
-                            <td class="text-end pe-4">
-                                <form method="post" asp-page-handler="Restore" asp-route-id="@item.Id" asp-route-type="@item.Type" class="d-inline">
-                                    <button type="submit" class="btn btn-sm restore-btn rounded-pill px-3">
-                                        <i class="fas fa-undo me-1"></i> Restore
-                                    </button>
-                                </form>
-                                <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-2" onclick="openDeleteModal('@item.Id', '@item.Name', '@item.Type')">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-        
-        <!-- Pagination for Metadata -->
-        @{
-            var metadataTotalPages = Math.Ceiling((double)Model.DeletedMetadataPaged.TotalItems / Model.DeletedMetadataPaged.PageSize);
-        }
-        @if (metadataTotalPages > 1)
-        {
-            <nav aria-label="Page navigation" class="mt-3">
-                <ul class="pagination justify-content-center">
-                    @if (Model.DeletedMetadataPaged.CurrentPage > 1)
-                    {
-                        <li class="page-item">
-                            <a class="page-link" href="?ItemType=@Model.ItemType&PageNumber=1">First</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="?ItemType=@Model.ItemType&PageNumber=@(Model.DeletedMetadataPaged.CurrentPage - 1)">Previous</a>
-                        </li>
-                    }
-                    <li class="page-item active">
-                        <span class="page-link">Page @Model.DeletedMetadataPaged.CurrentPage of @metadataTotalPages</span>
-                    </li>
-                    @if (Model.DeletedMetadataPaged.CurrentPage < metadataTotalPages)
-                    {
-                        <li class="page-item">
-                            <a class="page-link" href="?ItemType=@Model.ItemType&PageNumber=@(Model.DeletedMetadataPaged.CurrentPage + 1)">Next</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="?ItemType=@Model.ItemType&PageNumber=@metadataTotalPages">Last</a>
-                        </li>
-                    }
-                </ul>
-            </nav>
-        }
-    </div>
-}
-
-<!-- Deleted Newsletters -->
-@if ((Model.ItemType == "All" || Model.ItemType == "Newsletter") && Model.DeletedNewsletters.Any())
+@if (Model.DeletedNewsletters.Any())
 {
     <div class="card overflow-hidden mb-4">
         <div class="card-header bg-danger bg-opacity-10 border-danger p-4">
@@ -294,12 +61,12 @@
                                 </span>
                             </td>
                             <td class="text-end pe-4">
-                                <form method="post" asp-page-handler="Restore" asp-route-id="@item.Id" asp-route-type="Newsletter" class="d-inline">
+                                <form method="post" asp-page-handler="Restore" asp-route-id="@item.Id" class="d-inline">
                                     <button type="submit" class="btn btn-sm restore-btn rounded-pill px-3">
                                         <i class="fas fa-undo me-1"></i> Restore
                                     </button>
                                 </form>
-                                <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-2" onclick="openDeleteModal('@item.Id', '@item.Title', 'Newsletter')">
+                                <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-2" onclick="openDeleteModal('@item.Id', '@item.Title')">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             </td>
@@ -309,7 +76,7 @@
             </table>
         </div>
         
-        <!-- Pagination for Newsletters -->
+        
         @{
             var newsletterTotalPages = Math.Ceiling((double)Model.DeletedNewslettersPaged.TotalItems / Model.DeletedNewslettersPaged.PageSize);
         }
@@ -320,10 +87,10 @@
                     @if (Model.DeletedNewslettersPaged.CurrentPage > 1)
                     {
                         <li class="page-item">
-                            <a class="page-link" href="?ItemType=@Model.ItemType&PageNumber=1">First</a>
+                            <a class="page-link" href="?PageNumber=1">First</a>
                         </li>
                         <li class="page-item">
-                            <a class="page-link" href="?ItemType=@Model.ItemType&PageNumber=@(Model.DeletedNewslettersPaged.CurrentPage - 1)">Previous</a>
+                            <a class="page-link" href="?PageNumber=@(Model.DeletedNewslettersPaged.CurrentPage - 1)">Previous</a>
                         </li>
                     }
                     <li class="page-item active">
@@ -332,10 +99,10 @@
                     @if (Model.DeletedNewslettersPaged.CurrentPage < newsletterTotalPages)
                     {
                         <li class="page-item">
-                            <a class="page-link" href="?ItemType=@Model.ItemType&PageNumber=@(Model.DeletedNewslettersPaged.CurrentPage + 1)">Next</a>
+                            <a class="page-link" href="?PageNumber=@(Model.DeletedNewslettersPaged.CurrentPage + 1)">Next</a>
                         </li>
                         <li class="page-item">
-                            <a class="page-link" href="?ItemType=@Model.ItemType&PageNumber=@newsletterTotalPages">Last</a>
+                            <a class="page-link" href="?PageNumber=@newsletterTotalPages">Last</a>
                         </li>
                     }
                 </ul>
@@ -344,32 +111,32 @@
     </div>
 }
 
-<!-- Empty State -->
-@if (!Model.DeletedItems.Any() && !Model.DeletedMetadata.Any() && !Model.DeletedNewsletters.Any())
+
+@if (!Model.DeletedNewsletters.Any())
 {
     <div class="card p-5 text-center">
         <div class="text-secondary mb-3">
             <i class="fas fa-check-circle fa-3x opacity-25"></i>
         </div>
-        <h5 class="text-secondary fw-normal">No deleted items found</h5>
-        <p class="small text-muted">All your data is safe and accounted for!</p>
+        <h5 class="text-secondary fw-normal">No deleted newsletters found</h5>
+        <p class="small text-muted">All your newsletters are safe and accounted for!</p>
     </div>
 }
 
-<!-- Permanent Delete Confirmation Modal -->
+
 <div class="modal fade" id="permanentDeleteModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content bg-dark border border-danger text-white">
             <div class="modal-header border-danger bg-danger bg-opacity-10">
                 <div>
                     <h5 class="modal-title text-danger fw-bold">
-                        <i class="fas fa-exclamation-triangle me-2"></i> Permanently Delete Item
+                        <i class="fas fa-exclamation-triangle me-2"></i> Permanently Delete Newsletter
                     </h5>
                 </div>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p class="mb-2">Are you sure you want to <strong>permanently delete</strong> this item?</p>
+                <p class="mb-2">Are you sure you want to <strong>permanently delete</strong> this newsletter?</p>
                 <p class="text-secondary small mb-3">
                     <strong id="deleteItemName"></strong> will be completely removed from the system. This action <strong>CANNOT</strong> be undone.
                 </p>
@@ -382,7 +149,6 @@
                 <form method="post" asp-page-handler="PermanentlyDelete" id="deleteForm" class="d-inline">
                     @Html.AntiForgeryToken()
                     <input type="hidden" id="deleteItemId" name="id" />
-                    <input type="hidden" id="deleteItemType" name="type" />
                     <button type="submit" class="btn btn-danger" id="deleteSubmitBtn">
                         <i class="fas fa-skull-crossbones me-1"></i> Permanently Delete
                     </button>
@@ -394,31 +160,18 @@
 
 @section Scripts {
     <script>
-        function openDeleteModal(id, name, type) {
-            console.log('Opening delete modal for:', id, name, type);
-            
-            // Set hidden input values
+        function openDeleteModal(id, name) {
             document.getElementById('deleteItemId').value = id;
             document.getElementById('deleteItemName').textContent = name;
-            document.getElementById('deleteItemType').value = type;
-            
-            console.log('Form values set - ID:', document.getElementById('deleteItemId').value, 'Type:', document.getElementById('deleteItemType').value);
-            
-            // Show modal
             var modal = new bootstrap.Modal(document.getElementById('permanentDeleteModal'));
             modal.show();
         }
 
-        // Prevent form submission if values are empty
         document.getElementById('deleteForm').addEventListener('submit', function(e) {
             const id = document.getElementById('deleteItemId').value;
-            const type = document.getElementById('deleteItemType').value;
-            
-            console.log('Form submitting with ID:', id, 'Type:', type);
-            
-            if (!id || !type) {
+            if (!id) {
                 e.preventDefault();
-                alert('Error: Item ID or Type is missing. Please try again.');
+                alert('Error: Newsletter ID is missing. Please try again.');
                 return false;
             }
         });

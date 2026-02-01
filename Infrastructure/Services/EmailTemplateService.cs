@@ -9,11 +9,6 @@ using System.Threading.Tasks;
 
 namespace NewsletterApp.Infrastructure.Services
 {
-    /// <summary>
-    /// Email Template Service implementation
-    /// Implements Template Method pattern for dynamic email template rendering
-    /// Follows Open/Closed Principle - open for extension (new templates) without modifying existing code
-    /// </summary>
     public class EmailTemplateService : IEmailTemplateService
     {
         private readonly string _templatesDirectory;
@@ -21,7 +16,6 @@ namespace NewsletterApp.Infrastructure.Services
         private readonly Dictionary<string, string> _templateCache;
         private static readonly object _cacheLock = new object();
 
-        // Template mapping for interests
         private static readonly Dictionary<string, string> InterestTemplateMap = new(StringComparer.OrdinalIgnoreCase)
         {
             { "Houses", "HousesNewsletter" },
@@ -37,18 +31,14 @@ namespace NewsletterApp.Infrastructure.Services
             _logger = logger;
             _templateCache = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-            // Get templates directory from configuration or use default
             var templatesPath = configuration["EmailSettings:TemplatesPath"];
             if (string.IsNullOrEmpty(templatesPath))
             {
                 var env = configuration["ASPNETCORE_ENVIRONMENT"] ?? "Production";
                 var basePath = AppDomain.CurrentDomain.BaseDirectory;
                 
-                // In development, we might want to look at the project folder, 
-                // but for consistency with static files, we use wwwroot
                 _templatesDirectory = Path.Combine(basePath, "wwwroot", "templates", "email");
                 
-                // If it doesn't exist relative to execution dir (typical in dev), try to find it in the API project dir
                 if (!Directory.Exists(_templatesDirectory))
                 {
                     _templatesDirectory = Path.Combine(basePath, "..", "..", "..", "API", "wwwroot", "templates", "email");
@@ -91,7 +81,6 @@ namespace NewsletterApp.Infrastructure.Services
 
             string templateContent = await LoadTemplateAsync(templateName);
 
-            // Replace placeholders with actual values
             foreach (var kvp in context)
             {
                 var placeholder = $"{{{{{kvp.Key}}}}}";
@@ -106,16 +95,13 @@ namespace NewsletterApp.Infrastructure.Services
             if (string.IsNullOrWhiteSpace(interest))
                 return "GenericNewsletter";
 
-            // Clean the interest value
             var cleanInterest = NormalizeInterestKey(interest);
 
-            // Try exact match first
             if (InterestTemplateMap.TryGetValue(cleanInterest, out var templateName))
             {
                 return templateName;
             }
 
-            // Try fallback by checking normalized keys in dictionary
             foreach (var kvp in InterestTemplateMap)
             {
                 if (NormalizeInterestKey(kvp.Key).Equals(cleanInterest, StringComparison.OrdinalIgnoreCase))
@@ -131,7 +117,6 @@ namespace NewsletterApp.Infrastructure.Services
         private static string NormalizeInterestKey(string input)
         {
             if (string.IsNullOrWhiteSpace(input)) return string.Empty;
-            // Remove whitespace and non-alphanumeric characters to create a normalized key
             var chars = input.Where(c => char.IsLetterOrDigit(c)).ToArray();
             return new string(chars);
         }
@@ -148,13 +133,11 @@ namespace NewsletterApp.Infrastructure.Services
 
         public string GetBestTemplateName(string explicitTemplate, IEnumerable<string> interests)
         {
-            // Priority 1: explicit template
             if (!string.IsNullOrWhiteSpace(explicitTemplate) && TemplateExists(explicitTemplate))
             {
                 return explicitTemplate;
             }
 
-            // Priority 2: try interests (prefer the first matching mapped interest)
             if (interests != null)
             {
                 foreach (var interest in interests)
@@ -168,13 +151,11 @@ namespace NewsletterApp.Infrastructure.Services
                 }
             }
 
-            // Fallback to generic
             return "GenericNewsletter";
         }
 
         private async Task<string> LoadTemplateAsync(string templateName)
         {
-            // Check cache first
             lock (_cacheLock)
             {
                 if (_templateCache.TryGetValue(templateName, out var cachedContent))
@@ -198,7 +179,6 @@ namespace NewsletterApp.Infrastructure.Services
 
             var content = await File.ReadAllTextAsync(templatePath);
 
-            // Cache the template
             lock (_cacheLock)
             {
                 _templateCache[templateName] = content;

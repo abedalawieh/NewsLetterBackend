@@ -34,12 +34,10 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Newsletters
             Newsletters = await _newsletterService.GetHistoryAsync();
             var newsletterList = Newsletters.ToList();
             
-            // Calculate pagination
             var totalItems = newsletterList.Count;
             var totalPages = (int)Math.Ceiling(totalItems / (double)PageSize);
             Newsletters = newsletterList.Skip((PageNumber - 1) * PageSize).Take(PageSize).ToList();
 
-            // Initialize pagination
             Pagination = new PaginationViewModel
             {
                 CurrentPage = PageNumber,
