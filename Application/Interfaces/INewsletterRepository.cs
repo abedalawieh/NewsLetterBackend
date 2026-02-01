@@ -7,5 +7,6 @@ namespace NewsletterApp.Application.Interfaces
 {
     public interface INewsletterRepository : IAsyncRepository<Newsletter>
     {
+        Task<(IEnumerable<Newsletter> Items, int TotalCount)> GetPagedPublishedAsync(string searchTerm, IEnumerable<string> interests, int pageNumber, int pageSize, string sortBy);
     }
 }

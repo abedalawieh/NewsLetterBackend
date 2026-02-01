@@ -7,6 +7,7 @@ namespace NewsletterApp.Application.DTOs
         public Guid Id { get; set; }
         public string Title { get; set; } = "";
         public string TargetInterests { get; set; } = "";
+        public List<string> TargetInterestLabels { get; set; } = new();
         public string TemplateName { get; set; }
         public bool IsDraft { get; set; }
         public DateTime? SentAt { get; set; }
@@ -19,6 +20,7 @@ namespace NewsletterApp.Application.DTOs
         public string Title { get; set; } = "";
         public string Content { get; set; } = "";
         public string TargetInterests { get; set; } = "";
+        public List<string> TargetInterestLabels { get; set; } = new();
         public string TemplateName { get; set; }
         public bool IsDraft { get; set; }
         public DateTime? SentAt { get; set; }

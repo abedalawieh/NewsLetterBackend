@@ -32,12 +32,23 @@ builder.Services.AddWebOptimizer(pipeline =>
 
 
 
+var databaseType = builder.Configuration.GetValue<string>("DatabaseType") ?? "SqlServer";
+var migrationsAssembly = "NewsletterApp.API";
+var defaultConnection = builder.Configuration.GetConnectionString("DefaultConnection");
+
 builder.Services.AddDbContext<NewsletterDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        b => b.MigrationsAssembly("NewsletterApp.API")
-    )
-);
+{
+    switch (databaseType?.Trim().ToLowerInvariant())
+    {
+        case "sqlite":
+            options.UseSqlite(defaultConnection, b => b.MigrationsAssembly(migrationsAssembly));
+            break;
+        case "sqlserver":
+        default:
+            options.UseSqlServer(defaultConnection, b => b.MigrationsAssembly(migrationsAssembly));
+            break;
+    }
+});
 
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options => {
     options.Password.RequireDigit = false;

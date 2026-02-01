@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using NewsletterApp.Application.DTOs;
 using NewsletterApp.Domain.Entities;
 
 namespace NewsletterApp.Application.Interfaces
@@ -12,6 +13,7 @@ namespace NewsletterApp.Application.Interfaces
         Task<IEnumerable<Newsletter>> GetHistoryAsync();
         Task<Newsletter> GetByIdAsync(Guid newsletterId);
         Task<(IEnumerable<Newsletter> Items, int TotalCount)> GetPagedHistoryAsync(int pageNumber, int pageSize);
+        Task<PagedResult<NewsletterListDto>> GetPagedPublishedAsync(NewsletterFilterParams filter);
         Task<bool> DeleteAsync(Guid newsletterId);
     }
 }

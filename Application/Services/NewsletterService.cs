@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using NewsletterApp.Application.DTOs;
 
 namespace NewsletterApp.Application.Services
 {
@@ -15,6 +16,7 @@ namespace NewsletterApp.Application.Services
         private readonly ISubscriberRepository _subscriberRepository;
         private readonly IEmailService _emailService;
         private readonly IEmailTemplateService _templateService;
+        private readonly ILookupRepository _lookupRepository;
         private readonly ILogger<NewsletterService> _logger;
 
         public NewsletterService(
@@ -22,12 +24,14 @@ namespace NewsletterApp.Application.Services
             ISubscriberRepository subscriberRepository,
             IEmailService emailService,
             IEmailTemplateService templateService,
+            ILookupRepository lookupRepository,
             ILogger<NewsletterService> logger)
         {
             _newsletterRepository = newsletterRepository;
             _subscriberRepository = subscriberRepository;
             _emailService = emailService;
             _templateService = templateService;
+            _lookupRepository = lookupRepository;
             _logger = logger;
         }
 
@@ -178,6 +182,65 @@ namespace NewsletterApp.Application.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error getting paged newsletter history");
+                throw;
+            }
+        }
+
+        public async Task<PagedResult<NewsletterListDto>> GetPagedPublishedAsync(NewsletterFilterParams filter)
+        {
+            try
+            {
+                var pageNumber = filter?.PageNumber ?? 1;
+                var pageSize = filter?.PageSize ?? 6;
+                if (pageNumber < 1) pageNumber = 1;
+                if (pageSize < 1) pageSize = 6;
+                if (pageSize > 50) pageSize = 50;
+
+                var interests = (filter?.Interests ?? string.Empty)
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(i => i.Trim())
+                    .Where(i => !string.IsNullOrWhiteSpace(i))
+                    .ToList();
+
+                var (items, totalCount) = await _newsletterRepository.GetPagedPublishedAsync(
+                    filter?.SearchTerm,
+                    interests,
+                    pageNumber,
+                    pageSize,
+                    filter?.SortBy);
+
+                var interestLookups = await _lookupRepository.GetItemsByCategoryAsync("Interest");
+                var labelMap = interestLookups
+                    .Where(i => i.IsActive)
+                    .GroupBy(i => i.Value, StringComparer.OrdinalIgnoreCase)
+                    .ToDictionary(g => g.Key, g => g.First().Label, StringComparer.OrdinalIgnoreCase);
+
+                return new PagedResult<NewsletterListDto>
+                {
+                    Items = items.Select(n => new NewsletterListDto
+                    {
+                        Id = n.Id,
+                        Title = n.Title,
+                        TargetInterests = n.TargetInterests,
+                        TargetInterestLabels = (n.TargetInterests ?? string.Empty)
+                            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                            .Select(i => i.Trim())
+                            .Where(i => !string.IsNullOrWhiteSpace(i))
+                            .Select(i => labelMap.TryGetValue(i, out var label) ? label : i)
+                            .ToList(),
+                        TemplateName = n.TemplateName,
+                        IsDraft = n.IsDraft,
+                        SentAt = n.SentAt,
+                        CreatedAt = n.CreatedAt
+                    }),
+                    TotalItems = totalCount,
+                    CurrentPage = pageNumber,
+                    PageSize = pageSize
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting paged published newsletters");
                 throw;
             }
         }

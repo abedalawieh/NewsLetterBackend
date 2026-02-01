@@ -24,4 +24,13 @@ namespace NewsletterApp.Application.DTOs
         public string SortBy { get; set; } = "CreatedAt";
         public bool SortDescending { get; set; } = true;
     }
+
+    public class NewsletterFilterParams
+    {
+        public string? SearchTerm { get; set; }
+        public string? Interests { get; set; }
+        public int PageNumber { get; set; } = 1;
+        public int PageSize { get; set; } = 6;
+        public string? SortBy { get; set; } = "newest";
+    }
 }

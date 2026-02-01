@@ -51,6 +51,10 @@ namespace NewsletterApp.API.Controllers
             {
                 return BadRequest(new { message = ex.Message });
             }
+            catch
+            {
+                return StatusCode(500, new { message = "An unexpected error occurred." });
+            }
         }
         [HttpPost("unsubscribe")]
         [ProducesResponseType(204)]
@@ -74,6 +78,10 @@ namespace NewsletterApp.API.Controllers
                     return NotFound(new { message = "There is no account associated with this email address." });
                 }
                 return NotFound(new { message = ex.Message });
+            }
+            catch
+            {
+                return StatusCode(500, new { message = "An unexpected error occurred." });
             }
         }
     }

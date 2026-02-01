@@ -22,8 +22,15 @@ namespace NewsletterApp.API.Controllers
         [HttpGet("items/{category}")]
         public async Task<ActionResult<IEnumerable<LookupDto>>> GetByCategory(string category)
         {
-            var items = await _lookupService.GetItemsByCategoryAsync(category);
-            return Ok(items);
+            try
+            {
+                var items = await _lookupService.GetItemsByCategoryAsync(category);
+                return Ok(items);
+            }
+            catch
+            {
+                return StatusCode(500, new { message = "An unexpected error occurred." });
+            }
         }
 
     }
