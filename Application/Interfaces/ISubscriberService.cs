@@ -10,7 +10,6 @@ namespace NewsletterApp.Application.Interfaces
         Task<SubscriberResponseDto> CreateSubscriberAsync(CreateSubscriberDto dto);
         Task<SubscriberResponseDto> GetSubscriberByIdAsync(Guid id);
         Task<IEnumerable<SubscriberResponseDto>> GetAllSubscribersAsync();
-        Task<SubscriberResponseDto> UpdateSubscriberAsync(Guid id, UpdateSubscriberDto dto);
         Task<bool> DeleteSubscriberAsync(Guid id);
         Task<bool> DeactivateSubscriberAsync(Guid id);
         Task<bool> ActivateSubscriberAsync(Guid id);

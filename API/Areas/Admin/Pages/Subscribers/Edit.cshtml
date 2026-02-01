@@ -1,7 +1,7 @@
 @page "{id:guid}"
 @model NewsletterApp.API.Areas.Admin.Pages.Subscribers.EditModel
 @{
-    ViewData["Title"] = "Update Subscriber";
+    ViewData["Title"] = "Subscriber Details";
 }
 
 <div class="row justify-content-center">
@@ -11,101 +11,84 @@
                 <i class="fas fa-arrow-left"></i>
             </a>
             <div>
-                <h2 class="fw-bold mb-0">Update @Model.Subscriber?.FirstName</h2>
-                <p class="text-secondary small mb-0">Managing system access and preferences for @Model.Subscriber?.Email</p>
+                <h2 class="fw-bold mb-0">Subscriber Information</h2>
+                <p class="text-secondary small mb-0">Viewing profile and preferences for @Model.Subscriber?.Email</p>
+            </div>
+            <div class="ms-auto">
+                @if (Model.Subscriber?.IsActive == true)
+                {
+                    <span class="badge bg-success px-3 py-2">ACTIVE</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger px-3 py-2">INACTIVE</span>
+                }
             </div>
         </div>
 
         <div class="card p-5">
-            <form method="post">
-                <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
-
-                <div class="row g-4 mb-4">
-                    <div class="col-md-6">
-                        <label asp-for="Input.FirstName" class="text-uppercase-label">First Name</label>
-                        <input asp-for="Input.FirstName" class="form-control" required />
-                        <span asp-validation-for="Input.FirstName" class="text-danger small"></span>
-                    </div>
-                    <div class="col-md-6">
-                        <label asp-for="Input.LastName" class="text-uppercase-label">Last Name</label>
-                        <input asp-for="Input.LastName" class="form-control" required />
-                        <span asp-validation-for="Input.LastName" class="text-danger small"></span>
-                    </div>
+            <div class="row g-4 mb-5">
+                <div class="col-md-6">
+                    <label class="text-uppercase-label">First Name</label>
+                    <div class="form-control-plaintext text-white fs-5 fw-bold">@Model.Subscriber?.FirstName</div>
                 </div>
-
-                <div class="mb-5">
-                    <label class="text-uppercase-label">Subscriber Type *</label>
-                    <div class="premium-form-grid">
-                        @foreach (var type in Model.SubscriberTypes)
-                        {
-                            <label class="premium-check-item @(Model.Input.Type == type.Value ? "selected" : "")" for="type_@type.Value">
-                                <input class="premium-check-input" type="radio" asp-for="Input.Type" value="@type.Value" id="type_@type.Value" required>
-                                <span class="premium-check-label">@type.Label</span>
-                            </label>
-                        }
-                    </div>
-                    <span asp-validation-for="Input.Type" class="text-danger small"></span>
+                <div class="col-md-6">
+                    <label class="text-uppercase-label">Last Name</label>
+                    <div class="form-control-plaintext text-white fs-5 fw-bold">@Model.Subscriber?.LastName</div>
                 </div>
+            </div>
 
-                <div class="mb-5">
-                    <label class="text-uppercase-label">Communication Methods *</label>
-                    <div class="premium-form-grid">
-                        @foreach (var method in Model.CommunicationMethods)
-                        {
-                            var isChecked = Model.Input.CommunicationMethods.Contains(method.Value);
-                            <label class="premium-check-item @(isChecked ? "selected" : "")" for="meth_@method.Value">
-                                <input class="premium-check-input" type="checkbox" name="SelectedMethods" value="@method.Value" id="meth_@method.Value" @(isChecked ? "checked" : "")>
-                                <span class="premium-check-label">@method.Label</span>
-                            </label>
-                        }
-                    </div>
+            <div class="mb-5">
+                <label class="text-uppercase-label">Subscriber Type</label>
+                <div class="premium-form-grid">
+                    @foreach (var type in Model.SubscriberTypes)
+                    {
+                        var isSelected = Model.Subscriber?.Type == type.Value;
+                        <div class="premium-check-item @(isSelected ? "selected" : "opacity-50")">
+                            <span class="premium-check-label">
+                                @if (isSelected) { <i class="fas fa-check-circle me-2 text-primary"></i> }
+                                @type.Label
+                            </span>
+                        </div>
+                    }
                 </div>
+            </div>
 
-                <div class="mb-5">
-                    <label class="text-uppercase-label">Interests *</label>
-                    <div class="premium-form-grid">
-                        @foreach (var interest in Model.Interests)
-                        {
-                            var isChecked = Model.Input.Interests.Contains(interest.Value);
-                            <label class="premium-check-item @(isChecked ? "selected" : "")" for="int_@interest.Value">
-                                <input class="premium-check-input" type="checkbox" name="SelectedInterests" value="@interest.Value" id="int_@interest.Value" @(isChecked ? "checked" : "")>
-                                <span class="premium-check-label">@interest.Label</span>
-                            </label>
-                        }
-                    </div>
+            <div class="mb-5">
+                <label class="text-uppercase-label">Communication Methods</label>
+                <div class="premium-form-grid">
+                    @foreach (var method in Model.CommunicationMethods)
+                    {
+                        var isChecked = Model.Subscriber?.CommunicationMethods.Contains(method.Value) ?? false;
+                        <div class="premium-check-item @(isChecked ? "selected" : "opacity-50")">
+                            <span class="premium-check-label">
+                                @if (isChecked) { <i class="fas fa-check-circle me-2 text-primary"></i> }
+                                @method.Label
+                            </span>
+                        </div>
+                    }
                 </div>
+            </div>
 
-                <div class="d-flex justify-content-end gap-3 pt-4 border-top border-secondary border-opacity-10">
-                    <a asp-page="Index" class="btn btn-outline-secondary px-4 py-2">Discard Changes</a>
-                    <button type="submit" class="btn btn-primary px-5 py-2 fw-bold">
-                        <i class="fas fa-save me-2"></i> Save Changes
-                    </button>
+            <div class="mb-5">
+                <label class="text-uppercase-label">Interests</label>
+                <div class="premium-form-grid">
+                    @foreach (var interest in Model.Interests)
+                    {
+                        var isChecked = Model.Subscriber?.Interests.Contains(interest.Value) ?? false;
+                        <div class="premium-check-item @(isChecked ? "selected" : "opacity-50")">
+                            <span class="premium-check-label">
+                                @if (isChecked) { <i class="fas fa-check-circle me-2 text-primary"></i> }
+                                @interest.Label
+                            </span>
+                        </div>
+                    }
                 </div>
-            </form>
+            </div>
+
+            <div class="d-flex justify-content-end gap-3 pt-4 border-top border-secondary border-opacity-10">
+                <a asp-page="Index" class="btn btn-outline-secondary px-4 py-2">Back to List</a>
+            </div>
         </div>
     </div>
 </div>
-
-@section Scripts {
-    <script>
-        // Real-time selection highlighting
-        document.querySelectorAll('.premium-check-input').forEach(input => {
-            input.addEventListener('change', function() {
-                const isRadio = this.type === 'radio';
-                const name = this.name;
-                
-                if (isRadio) {
-                    document.querySelectorAll(`.premium-check-input[name="${name}"]`).forEach(r => {
-                        r.closest('.premium-check-item').classList.remove('selected');
-                    });
-                }
-                
-                if (this.checked) {
-                    this.closest('.premium-check-item').classList.add('selected');
-                } else {
-                    this.closest('.premium-check-item').classList.remove('selected');
-                }
-            });
-        });
-    </script>
-}

@@ -20,9 +20,6 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Subscribers
             _lookupService = lookupService;
         }
 
-        [BindProperty]
-        public UpdateSubscriberDto Input { get; set; }
-
         public SubscriberResponseDto Subscriber { get; set; }
         public Guid Id { get; set; }
 
@@ -36,67 +33,8 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Subscribers
             Subscriber = await _subscriberService.GetSubscriberByIdAsync(id);
             if (Subscriber == null) return NotFound();
 
-            Input = new UpdateSubscriberDto
-            {
-                FirstName = Subscriber.FirstName,
-                LastName = Subscriber.LastName,
-                Type = Subscriber.Type,
-                CommunicationMethods = Subscriber.CommunicationMethods,
-                Interests = Subscriber.Interests
-            };
-
             await LoadLookupsAsync();
             return Page();
-        }
-
-        public async Task<IActionResult> OnPostAsync(Guid id, string[] SelectedMethods, string[] SelectedInterests)
-        {
-            Id = id;
-            Input.CommunicationMethods = SelectedMethods?.ToList() ?? new List<string>();
-            Input.Interests = SelectedInterests?.ToList() ?? new List<string>();
-
-            if (!ModelState.IsValid)
-            {
-                Subscriber = await _subscriberService.GetSubscriberByIdAsync(id);
-                await LoadLookupsAsync();
-                return Page();
-            }
-
-            try
-            {
-                await _subscriberService.UpdateSubscriberAsync(id, Input);
-                TempData["SuccessMessage"] = "Subscriber updated successfully.";
-                return RedirectToPage("Index");
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", ex.Message);
-                Subscriber = await _subscriberService.GetSubscriberByIdAsync(id);
-                await LoadLookupsAsync();
-                return Page();
-            }
-        }
-
-        public async Task<IActionResult> OnPostToggleAsync(Guid id)
-        {
-            try
-            {
-                var subscriber = await _subscriberService.GetSubscriberByIdAsync(id);
-                if (subscriber == null) return NotFound();
-
-                if (subscriber.IsActive)
-                    await _subscriberService.DeactivateSubscriberAsync(id);
-                else
-                    await _subscriberService.ActivateSubscriberAsync(id);
-
-                TempData["SuccessMessage"] = "Subscriber status updated successfully.";
-                return RedirectToPage(new { id });
-            }
-            catch (Exception ex)
-            {
-                TempData["ErrorMessage"] = ex.Message;
-                return RedirectToPage(new { id });
-            }
         }
 
         private async Task LoadLookupsAsync()

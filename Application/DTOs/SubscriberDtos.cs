@@ -31,27 +31,6 @@ namespace NewsletterApp.Application.DTOs
         public List<string> Interests { get; set; }
     }
 
-    public class UpdateSubscriberDto
-    {
-        [Required(ErrorMessage = "First name is required")]
-        [StringLength(100, MinimumLength = 2)]
-        public string FirstName { get; set; }
-
-        [Required(ErrorMessage = "Last name is required")]
-        [StringLength(100, MinimumLength = 2)]
-        public string LastName { get; set; }
-
-        [Required(ErrorMessage = "Subscriber type is required")]
-        public string Type { get; set; }
-
-        [Required(ErrorMessage = "At least one communication method is required")]
-        [MinLength(1)]
-        public List<string> CommunicationMethods { get; set; }
-
-        [Required(ErrorMessage = "At least one interest is required")]
-        [MinLength(1)]
-        public List<string> Interests { get; set; }
-    }
 
     public class SubscriberResponseDto
     {

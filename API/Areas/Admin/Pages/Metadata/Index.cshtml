@@ -125,38 +125,48 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var row in categoryTable.Rows)
+                            @foreach (var item in category.Items.OrderBy(i => i.SortOrder))
                             {
                                 <tr>
-                                    @foreach (var cell in row.Cells)
-                                    {
-                                        <td class="@cell.CssClass">
-                                            @if (cell.IsHtml)
-                                            {
-                                                @Html.Raw(cell.Value)
-                                            }
-                                            else
-                                            {
-                                                @cell.Value
-                                            }
-                                        </td>
-                                    }
-                                     <td class="text-end pe-4">
-                                         @foreach (var action in row.Actions)
-                                         {
-                                             // Find the item to check if it's system (this is a bit inefficient in loop but works for small lists)
-                                             var itemObj = category.Items.FirstOrDefault(i => i.Id == Guid.Parse(action.OnClick.Split('\'')[1]));
-                                             var isSystemItem = itemObj?.IsSystem ?? false;
-                                             
-                                             // ONLY hide delete for system items.
-                                             if (isSystemItem && action.Icon.Contains("trash")) continue;
+                                    <td class="ps-4">
+                                        <span class="code-badge">@item.Value</span>
+                                    </td>
+                                    <td>@item.Label</td>
+                                    <td class="text-center">
+                                        <span class="text-secondary small">@item.SortOrder</span>
+                                    </td>
+                                    <td class="text-center">
+                                        @if (item.IsActive)
+                                        {
+                                            <span class="badge bg-success bg-opacity-10 text-success small">ACTIVE</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger bg-opacity-10 text-danger small">DISABLED</span>
+                                        }
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        @* Edit Button - Always allowed *@
+                                        <button type="button" class="btn btn-sm btn-info rounded-pill px-2" 
+                                            onclick="openEditModal('@item.Id', '@category.Name', '@item.Value', '@item.Label', '@item.SortOrder', '@item.IsActive');" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
 
-                                             <button type="button" class="btn btn-sm btn-@action.Style rounded-pill px-2" 
-                                                 onclick="@action.OnClick">
-                                                 <i class="@action.Icon"></i>
-                                             </button>
-                                         }
-                                     </td>
+                                        @* Toggle Status - Always allowed *@
+                                        <button type="button" class="btn btn-sm btn-@(item.IsActive ? "warning" : "success") rounded-pill px-2" 
+                                            onclick="document.getElementById('toggleForm-@item.Id').submit();" title="@(item.IsActive ? "Deactivate" : "Activate")">
+                                            <i class="fas @(item.IsActive ? "fa-power-off" : "fa-play")"></i>
+                                        </button>
+
+                                        @* Delete Button - Only for non-system items *@
+                                        @if (!item.IsSystem)
+                                        {
+                                            <button type="button" class="btn btn-sm btn-danger rounded-pill px-2" 
+                                                onclick="openDeleteModal('@item.Id', '@item.Label.Replace("'", "\\'")');" title="Delete">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        }
+                                    </td>
                                 </tr>
                             }
                         </tbody>

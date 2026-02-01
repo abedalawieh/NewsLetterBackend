@@ -125,10 +125,19 @@ namespace NewsletterApp.Application.Services
 
             #endregion
 
-            newsletter.SentAt = DateTime.UtcNow;
-            newsletter.IsDraft = false;
-            newsletter.TemplateName = effectiveTemplate;
-            await _newsletterRepository.UpdateAsync(newsletter);
+            // Only mark the newsletter as sent when at least one email was delivered.
+            if (successCount > 0)
+            {
+                newsletter.SentAt = DateTime.UtcNow;
+                newsletter.IsDraft = false;
+                newsletter.TemplateName = effectiveTemplate;
+                await _newsletterRepository.UpdateAsync(newsletter);
+            }
+            else
+            {
+                _logger.LogWarning("Newsletter {Id} was not marked as sent because no emails were delivered.", newsletterId);
+                throw new InvalidOperationException("No emails were sent for the newsletter. Check SMTP settings and templates.");
+            }
         }
 
         public async Task<IEnumerable<Newsletter>> GetHistoryAsync()

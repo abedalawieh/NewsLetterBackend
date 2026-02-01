@@ -69,22 +69,6 @@ namespace NewsletterApp.Application.Services
             return subscribers.Select(MapToDto);
         }
 
-        public async Task<SubscriberResponseDto> UpdateSubscriberAsync(Guid id, UpdateSubscriberDto dto)
-        {
-            var subscriber = await _repository.GetByIdAsync(id);
-            if (subscriber == null) throw new KeyNotFoundException($"Subscriber with ID {id} not found.");
-
-            subscriber.UpdateDetails(
-                dto.FirstName,
-                dto.LastName,
-                dto.Type,
-                dto.CommunicationMethods,
-                dto.Interests
-            );
-            
-            await _repository.UpdateAsync(subscriber);
-            return MapToDto(subscriber);
-        }
 
         public async Task<bool> DeleteSubscriberAsync(Guid id)
         {

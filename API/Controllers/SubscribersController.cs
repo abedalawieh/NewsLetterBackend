@@ -103,37 +103,6 @@ namespace NewsletterApp.API.Controllers
             }
         }
 
-        /// <summary>
-        /// Update an existing subscriber
-        /// </summary>
-        /// <param name="id">Subscriber ID</param>
-        /// <param name="dto">Updated subscriber data</param>
-        /// <returns>Updated subscriber</returns>
-        [HttpPut("{id}")]
-        [ProducesResponseType(typeof(SubscriberResponseDto), 200)]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(404)]
-        public async Task<ActionResult<SubscriberResponseDto>> UpdateSubscriber(Guid id, [FromBody] UpdateSubscriberDto dto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            try
-            {
-                var subscriber = await _subscriberService.UpdateSubscriberAsync(id, dto);
-                return Ok(subscriber);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new { message = ex.Message });
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-        }
 
         /// <summary>
         /// Delete a subscriber
