@@ -1,0 +1,49 @@
+/* Admin Dashboard Base Styles */
+:root {
+    --admin-primary: #6366f1;
+    --admin-primary-dark: #4f46e5;
+    --admin-bg-dark: #0f172a;
+    --admin-card-bg: #1e293b;
+    --admin-text-main: #f8fafc;
+    --admin-text-muted: #94a3b8;
+    --admin-border: rgba(148, 163, 184, 0.1);
+}
+
+body.admin-body {
+    background-color: var(--admin-bg-dark);
+    color: var(--admin-text-main);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.card {
+    background-color: var(--admin-card-bg);
+    border: 1px solid var(--admin-border);
+    border-radius: 12px;
+}
+
+.stat-card {
+    padding: 1.25rem;
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+
+/* Custom scrollbar for Admin */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--admin-bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+}

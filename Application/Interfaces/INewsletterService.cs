@@ -5,11 +5,48 @@ using NewsletterApp.Domain.Entities;
 
 namespace NewsletterApp.Application.Interfaces
 {
+    /// <summary>
+    /// Service interface for newsletter operations
+    /// Follows Interface Segregation Principle with focused methods
+    /// </summary>
     public interface INewsletterService
     {
+        /// <summary>
+        /// Creates a new newsletter draft
+        /// </summary>
         Task<Newsletter> CreateDraftAsync(string title, string content, List<string> interests);
-        Task SendNewsletterAsync(Guid newsletterId);
+
+        /// <summary>
+        /// Creates a newsletter draft with subscriber type targeting
+        /// </summary>
+        Task<Newsletter> CreateDraftAsync(string title, string content, List<string> interests, string targetSubscriberType);
+
+        /// <summary>
+        /// Sends a newsletter to subscribers matching the target criteria
+        /// </summary>
+        /// <param name="newsletterId">The newsletter ID to send</param>
+        /// <param name="templateName">Optional specific template to use (null for auto-selection)</param>
+        /// <param name="targetSubscriberType">Optional filter by subscriber type (HomeBuilder/HomeBuyer)</param>
+        Task SendNewsletterAsync(Guid newsletterId, string templateName = null, string targetSubscriberType = null);
+
+        /// <summary>
+        /// Gets the newsletter history
+        /// </summary>
         Task<IEnumerable<Newsletter>> GetHistoryAsync();
+
+        /// <summary>
+        /// Gets a single newsletter by ID
+        /// </summary>
+        Task<Newsletter> GetByIdAsync(Guid newsletterId);
+
+        /// <summary>
+        /// Gets paginated history
+        /// </summary>
+        Task<(IEnumerable<Newsletter> Items, int TotalCount)> GetPagedHistoryAsync(int pageNumber, int pageSize);
+
+        /// <summary>
+        /// Deletes a newsletter
+        /// </summary>
         Task<bool> DeleteAsync(Guid newsletterId);
     }
 }

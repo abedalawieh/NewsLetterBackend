@@ -42,6 +42,12 @@ namespace NewsletterApp.Application.DTOs
         public string OldValue { get; set; } = "";
         public string ItemLabel { get; set; } = "";
         public int SubscriberCount { get; set; }
-        public List<(string Value, string Label)> Replacements { get; set; } = new();
+        public List<ReplacementOption> Replacements { get; set; } = new();
+    }
+
+    public class ReplacementOption
+    {
+        public string Value { get; set; } = "";
+        public string Label { get; set; } = "";
     }
 }

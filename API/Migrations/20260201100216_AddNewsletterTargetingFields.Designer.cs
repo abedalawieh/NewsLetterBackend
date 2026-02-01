@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NewsletterApp.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using NewsletterApp.Infrastructure.Data;
 namespace NewsletterApp.API.Migrations
 {
     [DbContext(typeof(NewsletterDbContext))]
-    partial class NewsletterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260201100216_AddNewsletterTargetingFields")]
+    partial class AddNewsletterTargetingFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

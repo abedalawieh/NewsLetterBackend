@@ -24,6 +24,12 @@ builder.Services.AddRazorPages(options =>
     options.Conventions.AllowAnonymousToAreaPage("Admin", "/Account/Login");
 });
 
+builder.Services.AddWebOptimizer(pipeline =>
+{
+    pipeline.AddCssBundle("/css/admin.min.css", "css/admin.css");
+    pipeline.AddJavaScriptBundle("/js/admin.min.js", "js/admin.js");
+});
+
 #endregion
 
 #region Database & Identity
@@ -108,6 +114,9 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<ISubscriberRepository, SubscriberRepository>();
 builder.Services.AddScoped<ILookupRepository, LookupRepository>();
 builder.Services.AddScoped<INewsletterRepository, NewsletterRepository>();
+
+// Infrastructure Services
+builder.Services.AddScoped<IEmailTemplateService, EmailTemplateService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.AddScoped<ISubscriberService, SubscriberService>();
@@ -162,6 +171,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseWebOptimizer();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseCors("AllowReactApp");

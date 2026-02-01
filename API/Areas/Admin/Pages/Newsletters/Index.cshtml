@@ -42,6 +42,9 @@
                             <td>@newsletter.CreatedAt.ToString("MMM dd, yyyy")</td>
                             <td>
                                 <div class="btn-group btn-group-sm">
+                                    <a asp-page="Details" asp-route-id="@newsletter.Id" class="btn btn-outline-primary">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
                                     @if (newsletter.IsDraft)
                                     {
                                         <button type="button" class="btn btn-outline-info" onclick="document.getElementById('sendForm-@newsletter.Id').submit();">

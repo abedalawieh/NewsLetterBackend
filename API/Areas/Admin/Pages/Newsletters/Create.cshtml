@@ -20,19 +20,45 @@
                     <input asp-for="Input.Title" class="form-control bg-dark text-white border-0 p-3 shadow-sm" placeholder="e.g., Weekly Market Intelligence" required />
                 </div>
 
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label text-secondary small text-uppercase fw-bold">Target Audience</label>
+                        <select asp-for="Input.TargetSubscriberType" class="form-select bg-dark text-white border-0 p-3 shadow-sm">
+                            <option value="">All Subscribers</option>
+                            @foreach (var type in Model.SubscriberTypes)
+                            {
+                                <option value="@type.Value">@type.Label</option>
+                            }
+                        </select>
+                        <small class="text-muted">Filter recipients by subscriber type</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-secondary small text-uppercase fw-bold">Email Template</label>
+                        <select asp-for="Input.TemplateName" class="form-select bg-dark text-white border-0 p-3 shadow-sm">
+                            <option value="">Auto-select based on interests</option>
+                            @foreach (var template in Model.AvailableTemplates)
+                            {
+                                <option value="@template">@template</option>
+                            }
+                        </select>
+                        <small class="text-muted">Choose specific template or let the system decide</small>
+                    </div>
+                </div>
+
                 <div class="mb-4">
                     <label class="form-label text-secondary small text-uppercase fw-bold">Target Interests</label>
-                    <div class="d-flex flex-wrap gap-2 p-3 bg-dark rounded">
+                    <div class="d-flex flex-wrap gap-3 p-4 bg-dark rounded">
                         @foreach (var interest in Model.AvailableInterests)
                         {
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="TargetInterests" value="@interest.Value" id="int_@interest.Value">
-                                <label class="form-check-label text-secondary small" for="int_@interest.Value">
+                                <label class="form-check-label text-light" for="int_@interest.Value">
                                     @interest.Label
                                 </label>
                             </div>
                         }
                     </div>
+                    <small class="text-muted">Select the interests to target. If you select a single interest, the matching template will be used automatically.</small>
                 </div>
 
                 <div class="mb-5">
@@ -40,13 +66,26 @@
                     <textarea asp-for="Input.Content" rows="12" class="form-control bg-dark text-white border-0 p-3 shadow-sm font-monospace" placeholder="Compose your update here..." required></textarea>
                 </div>
 
-                <div class="d-flex justify-content-end">
+                <div class="d-flex justify-content-end gap-3">
+                    <a asp-page="Index" class="btn btn-outline-secondary px-4 py-3">
+                        Cancel
+                    </a>
                     <button type="submit" class="btn btn-primary px-5 py-3 fw-bold shadow-lg">
-                        Initialize Draft
+                        <i class="fas fa-save me-2"></i>Initialize Draft
                     </button>
                 </div>
             </form>
         </div>
+
+        <!-- Template Preview Info -->
+        <div class="card mt-4 p-4">
+            <h5 class="text-secondary mb-3"><i class="fas fa-info-circle me-2"></i>Template Selection Logic</h5>
+            <ul class="text-secondary small mb-0">
+                <li><strong>Explicit Template:</strong> If you select a template, it will always be used.</li>
+                <li><strong>Subscriber Type:</strong> If targeting HomeBuilders or HomeBuyers, their specific template is used.</li>
+                <li><strong>Single Interest:</strong> If one interest is selected, the matching template (e.g., HousesNewsletter) is used.</li>
+                <li><strong>Multiple Interests:</strong> The generic template is used for broader campaigns.</li>
+            </ul>
+        </div>
     </div>
 </div>
-

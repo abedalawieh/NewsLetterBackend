@@ -109,7 +109,7 @@ namespace NewsletterApp.Infrastructure.Services
                 OldValue = itemValue ?? "",
                 ItemLabel = itemLabel ?? "",
                 SubscriberCount = subscriberCount,
-                Replacements = replacements.Select(r => (r.Value, r.Label)).ToList()
+                Replacements = replacements.Select(r => new ReplacementOption { Value = r.Value, Label = r.Label }).ToList()
             };
         }
 

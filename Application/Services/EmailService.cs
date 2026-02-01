@@ -1,83 +1,112 @@
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using NewsletterApp.Application.Interfaces;
+using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace NewsletterApp.Application.Services
 {
+    /// <summary>
+    /// Email Service implementation
+    /// Uses the Strategy pattern for template selection
+    /// Follows Single Responsibility Principle - focused only on email sending
+    /// </summary>
     public class EmailService : IEmailService
     {
         private readonly IConfiguration _config;
+        private readonly IEmailTemplateService _templateService;
+        private readonly ILogger<EmailService> _logger;
 
-        public EmailService(IConfiguration config)
+        public EmailService(
+            IConfiguration config, 
+            IEmailTemplateService templateService,
+            ILogger<EmailService> logger)
         {
             _config = config;
+            _templateService = templateService;
+            _logger = logger;
         }
 
         public async Task SendEmailAsync(string to, string subject, string body)
         {
             var smtpSettings = _config.GetSection("EmailSettings");
             
-            using var client = new SmtpClient(smtpSettings["Host"])
+            try
             {
-                Port = int.Parse(smtpSettings["Port"]),
-                Credentials = new NetworkCredential(smtpSettings["Username"], smtpSettings["Password"]),
-                EnableSsl = true,
-            };
+                using var client = new SmtpClient(smtpSettings["Host"])
+                {
+                    Port = int.Parse(smtpSettings["Port"] ?? "587"),
+                    Credentials = new NetworkCredential(smtpSettings["Username"], smtpSettings["Password"]),
+                    EnableSsl = true,
+                };
 
-            var mailMessage = new MailMessage
+                var mailMessage = new MailMessage
+                {
+                    From = new MailAddress(smtpSettings["FromEmail"], smtpSettings["FromName"]),
+                    Subject = subject,
+                    Body = body,
+                    IsBodyHtml = true,
+                };
+
+                mailMessage.To.Add(to);
+
+                await client.SendMailAsync(mailMessage);
+                _logger.LogInformation("Email sent successfully to {Email}", to);
+            }
+            catch (Exception ex)
             {
-                From = new MailAddress(smtpSettings["FromEmail"], smtpSettings["FromName"]),
-                Subject = subject,
-                Body = body,
-                IsBodyHtml = true,
-            };
-
-            mailMessage.To.Add(to);
-
-            await client.SendMailAsync(mailMessage);
+                _logger.LogError(ex, "Failed to send email to {Email}", to);
+                throw;
+            }
         }
 
         public async Task SendNewsletterAsync(string to, string subject, string content)
         {
-            var frontendUrl = _config["EmailSettings:FrontendBaseUrl"];
+            await SendNewsletterWithTemplateAsync(to, "Subscriber", subject, content, null);
+        }
+
+        public async Task SendNewsletterWithTemplateAsync(
+            string to, 
+            string firstName, 
+            string subject, 
+            string content, 
+            string templateName = null)
+        {
+            var frontendUrl = _config["EmailSettings:FrontendBaseUrl"] ?? "http://localhost:5173";
             var unsubscribeLink = $"{frontendUrl}/unsubscribe?email={Uri.EscapeDataString(to)}";
 
-            // Professional HTML Template
-            string htmlTemplate = $@"
-                <div style='font-family: ""Segoe UI"", Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;'>
-                    <!-- Header -->
-                    <div style='background-color: #6366f1; padding: 30px; text-align: center;'>
-                        <h1 style='color: white; margin: 0; font-size: 24px; font-weight: 600;'>Newsletter Update</h1>
-                    </div>
+            // Use specified template or fall back to generic
+            var template = string.IsNullOrWhiteSpace(templateName) ? "GenericNewsletter" : templateName;
 
-                    <!-- Body -->
-                    <div style='padding: 40px 30px; line-height: 1.6; color: #334155; font-size: 16px;'>
-                        {content}
-                    </div>
+            // Build the context dictionary for template rendering
+            var context = new Dictionary<string, string>
+            {
+                { "Subject", subject },
+                { "FirstName", firstName ?? "Subscriber" },
+                { "Content", content },
+                { "UnsubscribeLink", unsubscribeLink },
+                { "Year", DateTime.Now.Year.ToString() }
+            };
 
-                    <!-- Action -->
-                    <div style='text-align: center; padding: 20px 30px; background-color: #f8fafc;'>
-                        <p style='color: #64748b; font-size: 14px; margin-bottom: 20px;'>
-                            Not interested specifically in this topic? You can update your preferences or unsubscribe below.
-                        </p>
-                        <a href='{unsubscribeLink}' style='background-color: #ef4444; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500; font-size: 14px; display: inline-block;'>
-                            Unsubscribe
-                        </a>
-                    </div>
+            try
+            {
+                var htmlContent = await _templateService.RenderTemplateAsync(template, context);
+                await SendEmailAsync(to, subject, htmlContent);
+                _logger.LogInformation("Newsletter sent to {Email} using template {Template}", to, template);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send newsletter to {Email} using template {Template}", to, template);
+                throw;
+            }
+        }
 
-                    <!-- Footer -->
-                    <div style='padding: 20px; background-color: #f1f5f9; text-align: center; font-size: 12px; color: #94a3b8;'>
-                        <p style='margin: 0;'>
-                            &copy; {System.DateTime.Now.Year} Newsletter App. All rights reserved.<br>
-                            You received this email because you signed up on our website.
-                        </p>
-                    </div>
-                </div>";
-
-            await SendEmailAsync(to, subject, htmlTemplate);
+        public IEnumerable<string> GetAvailableTemplates()
+        {
+            return _templateService.GetAvailableTemplates();
         }
     }
 }
-
