@@ -21,33 +21,10 @@
                 </div>
 
                 <div class="row mb-4">
-                    <div class="col-md-6">
-                        <label class="text-uppercase-label">Target Audience</label>
-                        <div class="premium-form-grid">
-                            <label class="premium-check-item" for="type_all">
-                                <input class="premium-check-input" type="radio" asp-for="Input.TargetSubscriberType" value="" id="type_all" checked>
-                                <span class="premium-check-label">All Subscribers</span>
-                            </label>
-                            @foreach (var type in Model.SubscriberTypes)
-                            {
-                                <label class="premium-check-item" for="type_@type.Value">
-                                    <input class="premium-check-input" type="radio" asp-for="Input.TargetSubscriberType" value="@type.Value" id="type_@type.Value">
-                                    <span class="premium-check-label">@type.Label</span>
-                                </label>
-                            }
-                        </div>
-                        <small class="text-muted mt-2 d-block">Filter recipients by subscriber type</small>
-                    </div>
-                    <div class="col-md-6">
+                    <div class="col-12">
                         <label class="form-label text-secondary small text-uppercase fw-bold">Email Template</label>
-                        <select asp-for="Input.TemplateName" class="form-select bg-dark text-white border-0 p-3 shadow-sm">
-                            <option value="">Auto-select based on interests</option>
-                            @foreach (var template in Model.AvailableTemplates)
-                            {
-                                <option value="@template">@template</option>
-                            }
-                        </select>
-                        <small class="text-muted">Choose specific template or let the system decide</small>
+                        <div class="p-3 bg-dark rounded text-white">Auto-select based on interests</div>
+                        <small class="text-muted">Template is chosen automatically per recipient based on their interests and type (if available).</small>
                     </div>
                 </div>
 
@@ -84,13 +61,13 @@
         </div>
 
         <!-- Template Preview Info -->
-        <div class="card mt-4 p-4">
+                <div class="card mt-4 p-4">
             <h5 class="text-secondary mb-3"><i class="fas fa-info-circle me-2"></i>Template Selection Logic</h5>
             <ul class="text-secondary small mb-0">
-                <li><strong>Explicit Template:</strong> If you select a template, it will always be used.</li>
-                <li><strong>Subscriber Type:</strong> If targeting HomeBuilders or HomeBuyers, their specific template is used.</li>
-                <li><strong>Single Interest:</strong> If one interest is selected, the matching template (e.g., HousesNewsletter) is used.</li>
-                <li><strong>Multiple Interests:</strong> The generic template is used for broader campaigns.</li>
+                <li><strong>Per-Recipient Auto-Select:</strong> The system picks the best template for each recipient automatically.</li>
+                <li><strong>Subscriber Type:</strong> If a recipient is a HomeBuilder or HomeBuyer, their type-specific template is preferred.</li>
+                <li><strong>Interests:</strong> The first matching interest-specific template is used when available.</li>
+                <li><strong>Fallback:</strong> The generic template is used for mixed or multi-interest audiences.</li>
             </ul>
         </div>
     </div>

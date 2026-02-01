@@ -13,11 +13,11 @@ namespace NewsletterApp.Domain.Entities
         /// <summary>
         /// Target subscriber type filter (HomeBuilder/HomeBuyer or null for all)
         /// </summary>
-        public string TargetSubscriberType { get; set; }
+        public string TargetSubscriberType { get; set; } = string.Empty;
         /// <summary>
         /// Specific template to use (null for auto-selection based on interests)
         /// </summary>
-        public string TemplateName { get; set; }
+        public string TemplateName { get; set; } = string.Empty;
         public DateTime? SentAt { get; set; }
         public bool IsDraft { get; set; }
 
@@ -36,8 +36,8 @@ namespace NewsletterApp.Domain.Entities
                 Title = title,
                 Content = content,
                 TargetInterests = targetInterests,
-                TargetSubscriberType = targetSubscriberType,
-                TemplateName = templateName,
+                TargetSubscriberType = targetSubscriberType ?? string.Empty,
+                TemplateName = templateName ?? string.Empty,
                 IsDraft = true,
                 CreatedAt = DateTime.UtcNow
             };

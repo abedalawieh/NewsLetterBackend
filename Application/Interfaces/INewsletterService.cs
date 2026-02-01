@@ -28,6 +28,7 @@ namespace NewsletterApp.Application.Interfaces
         /// <param name="templateName">Optional specific template to use (null for auto-selection)</param>
         /// <param name="targetSubscriberType">Optional filter by subscriber type (HomeBuilder/HomeBuyer)</param>
         Task SendNewsletterAsync(Guid newsletterId, string templateName = null, string targetSubscriberType = null);
+        Task<string> RenderTemplateForRecipientAsync(Guid newsletterId, Guid subscriberId, string templateName = null);
 
         /// <summary>
         /// Gets the newsletter history

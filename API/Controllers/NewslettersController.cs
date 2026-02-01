@@ -20,6 +20,23 @@ namespace NewsletterApp.API.Controllers
         }
 
         /// <summary>
+        /// Preview rendered template for a specific subscriber (admin preview)
+        /// </summary>
+        [HttpPost("preview")]
+        public async Task<ActionResult<string>> PreviewTemplate([FromBody] PreviewRequest request)
+        {
+            try
+            {
+                var html = await _newsletterService.RenderTemplateForRecipientAsync(request.NewsletterId, request.SubscriberId, request.TemplateName);
+                return Content(html, "text/html");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
+
+        /// <summary>
         /// Get all newsletters (public - for subscription flow)
         /// </summary>
         [HttpGet]
@@ -100,5 +117,12 @@ namespace NewsletterApp.API.Controllers
         public bool IsDraft { get; set; }
         public DateTime? SentAt { get; set; }
         public DateTime CreatedAt { get; set; }
+    }
+
+    public class PreviewRequest
+    {
+        public Guid NewsletterId { get; set; }
+        public Guid SubscriberId { get; set; }
+        public string TemplateName { get; set; }
     }
 }

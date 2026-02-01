@@ -28,15 +28,11 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Newsletters
         public NewsletterInput Input { get; set; }
 
         public IEnumerable<LookupDto> AvailableInterests { get; set; }
-        public IEnumerable<LookupDto> SubscriberTypes { get; set; }
-        public IEnumerable<string> AvailableTemplates { get; set; }
 
         public class NewsletterInput
         {
             public string Title { get; set; }
             public string Content { get; set; }
-            public string TargetSubscriberType { get; set; }
-            public string TemplateName { get; set; }
         }
 
         public async Task OnGetAsync()
@@ -46,27 +42,27 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Newsletters
 
         public async Task<IActionResult> OnPostAsync(string[] TargetInterests)
         {
+            var errors = ModelState
+    .Where(x => x.Value.Errors.Count > 0)
+    .Select(x => new { Key = x.Key, Errors = x.Value.Errors.Select(e => e.ErrorMessage).ToList() })
+    .ToList();
             if (!ModelState.IsValid) 
             {
                 await LoadLookupsAsync();
                 return Page();
             }
 
-            var interests = TargetInterests.ToList();
+            var interests = TargetInterests?.ToList() ?? new List<string>();
             
-            // Create newsletter with subscriber type targeting
+            // Create newsletter (no subscriber type targeting)
             var newsletter = await _newsletterService.CreateDraftAsync(
-                Input.Title, 
-                Input.Content, 
-                interests, 
-                string.IsNullOrWhiteSpace(Input.TargetSubscriberType) ? null : Input.TargetSubscriberType
+                Input.Title,
+                Input.Content,
+                interests,
+                null
             );
 
-            // Store template preference if specified
-            if (!string.IsNullOrWhiteSpace(Input.TemplateName))
-            {
-                newsletter.TemplateName = Input.TemplateName;
-            }
+            // Template is auto-selected per recipient; no explicit template stored here.
 
             TempData["SuccessMessage"] = "Newsletter draft created successfully!";
             return RedirectToPage("Index");
@@ -75,8 +71,8 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Newsletters
         private async Task LoadLookupsAsync()
         {
             AvailableInterests = await _lookupService.GetItemsByCategoryAsync("Interest");
-            SubscriberTypes = await _lookupService.GetItemsByCategoryAsync("SubscriberType");
-            AvailableTemplates = _emailService.GetAvailableTemplates().ToList();
+            // Subscriber types UI removed; no lookup required
+            // Templates are auto-selected per recipient; no need to load template list here.
         }
     }
 }

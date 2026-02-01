@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using NewsletterApp.Application.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
@@ -65,14 +66,18 @@ namespace NewsletterApp.Application.Services
 
         public async Task SendNewsletterAsync(string to, string subject, string content)
         {
-            await SendNewsletterWithTemplateAsync(to, "Subscriber", subject, content, null);
+            await SendNewsletterWithTemplateAsync(to, "Subscriber", string.Empty, string.Empty, Enumerable.Empty<string>(), Enumerable.Empty<string>(), subject, content, null);
         }
 
         public async Task SendNewsletterWithTemplateAsync(
-            string to, 
-            string firstName, 
-            string subject, 
-            string content, 
+            string to,
+            string firstName,
+            string lastName,
+            string type,
+            IEnumerable<string> communicationMethods,
+            IEnumerable<string> interests,
+            string subject,
+            string content,
             string templateName = null)
         {
             var frontendUrl = _config["EmailSettings:FrontendBaseUrl"] ?? "http://localhost:5173";
@@ -86,6 +91,10 @@ namespace NewsletterApp.Application.Services
             {
                 { "Subject", subject },
                 { "FirstName", firstName ?? "Subscriber" },
+                { "LastName", lastName ?? string.Empty },
+                { "Type", type ?? string.Empty },
+                { "CommunicationMethods", string.Join(", ", communicationMethods ?? Enumerable.Empty<string>()) },
+                { "Interests", string.Join(", ", interests ?? Enumerable.Empty<string>()) },
                 { "Content", content },
                 { "UnsubscribeLink", unsubscribeLink },
                 { "Year", DateTime.Now.Year.ToString() }

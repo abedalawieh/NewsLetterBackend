@@ -33,6 +33,12 @@ namespace NewsletterApp.Application.Interfaces
         string GetTemplateNameForSubscriberType(string subscriberType);
 
         /// <summary>
+        /// Determines the best template name for a specific recipient given an optional explicit template,
+        /// the subscriber's type and their interests. This enables per-recipient automatic template selection.
+        /// </summary>
+        string GetBestTemplateName(string explicitTemplate, string subscriberType, IEnumerable<string> interests);
+
+        /// <summary>
         /// Checks if a template exists
         /// </summary>
         bool TemplateExists(string templateName);

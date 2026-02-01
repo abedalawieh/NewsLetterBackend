@@ -23,7 +23,16 @@ namespace NewsletterApp.Application.Interfaces
         /// <param name="subject">Email subject</param>
         /// <param name="content">Newsletter content</param>
         /// <param name="templateName">Name of the template to use (null for generic)</param>
-        Task SendNewsletterWithTemplateAsync(string to, string firstName, string subject, string content, string templateName = null);
+        Task SendNewsletterWithTemplateAsync(
+            string to,
+            string firstName,
+            string lastName,
+            string type,
+            IEnumerable<string> communicationMethods,
+            IEnumerable<string> interests,
+            string subject,
+            string content,
+            string templateName = null);
 
         /// <summary>
         /// Gets the list of available email templates

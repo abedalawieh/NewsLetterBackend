@@ -91,8 +91,8 @@ namespace NewsletterApp.Application.Services
                 newsletter.TargetInterests,
                 effectiveSubscriberType ?? "All");
 
-            // Determine template to use
-            var effectiveTemplate = DetermineTemplate(templateName, newsletter, targetInterests);
+            // Use newsletter-level template as an explicit hint, but choose template per recipient
+            var explicitTemplateHint = !string.IsNullOrWhiteSpace(templateName) ? templateName : newsletter.TemplateName;
 
             #region Email Dispatch
 
@@ -101,14 +101,23 @@ namespace NewsletterApp.Application.Services
 
             foreach (var sub in filteredSubscribers)
             {
-                try 
+                try
                 {
+                    var perRecipientTemplate = _templateService.GetBestTemplateName(
+                        explicitTemplateHint,
+                        sub.Type,
+                        sub.Interests);
+
                     await _emailService.SendNewsletterWithTemplateAsync(
-                        sub.Email, 
+                        sub.Email,
                         sub.FirstName,
-                        newsletter.Title, 
+                        sub.LastName,
+                        sub.Type,
+                        sub.CommunicationMethods ?? Enumerable.Empty<string>(),
+                        sub.Interests ?? Enumerable.Empty<string>(),
+                        newsletter.Title,
                         newsletter.Content,
-                        effectiveTemplate
+                        perRecipientTemplate
                     );
                     successCount++;
                 }
@@ -130,7 +139,8 @@ namespace NewsletterApp.Application.Services
             {
                 newsletter.SentAt = DateTime.UtcNow;
                 newsletter.IsDraft = false;
-                newsletter.TemplateName = effectiveTemplate;
+                // Persist the newsletter-level template hint if present
+                newsletter.TemplateName = explicitTemplateHint;
                 await _newsletterRepository.UpdateAsync(newsletter);
             }
             else
@@ -169,6 +179,46 @@ namespace NewsletterApp.Application.Services
             if (newsletter == null) return false;
             await _newsletterRepository.DeleteAsync(newsletter);
             return true;
+        }
+
+        public async Task<string> RenderTemplateForRecipientAsync(Guid newsletterId, Guid subscriberId, string templateName = null)
+        {
+            var newsletter = await _newsletterRepository.GetByIdAsync(newsletterId);
+            if (newsletter == null) throw new KeyNotFoundException("Newsletter not found");
+
+            var subscriber = await _subscriberRepository.GetByIdAsync(subscriberId);
+            if (subscriber == null) throw new KeyNotFoundException("Subscriber not found");
+
+            var targetInterests = newsletter.TargetInterests
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(s => s.Trim())
+                .ToList();
+
+            var explicitTemplateHint = !string.IsNullOrWhiteSpace(templateName) ? templateName : newsletter.TemplateName;
+
+            var perRecipientTemplate = _templateService.GetBestTemplateName(
+                explicitTemplateHint,
+                subscriber.Type,
+                subscriber.Interests);
+
+            var unsubscribeLink = $"http://localhost:5173/unsubscribe?email={Uri.EscapeDataString(subscriber.Email)}";
+
+            var context = new Dictionary<string, string>
+            {
+                { "Subject", newsletter.Title },
+                { "FirstName", subscriber.FirstName ?? "Subscriber" },
+                { "LastName", subscriber.LastName ?? string.Empty },
+                { "Type", subscriber.Type ?? string.Empty },
+                { "CommunicationMethods", string.Join(", ", subscriber.CommunicationMethods ?? new List<string>()) },
+                { "Interests", string.Join(", ", subscriber.Interests ?? new List<string>()) },
+                { "Content", newsletter.Content },
+                { "UnsubscribeLink", unsubscribeLink },
+                { "Year", DateTime.Now.Year.ToString() }
+            };
+
+            // Use the template service to render HTML for preview
+            var html = await _templateService.RenderTemplateAsync(perRecipientTemplate, context);
+            return html;
         }
 
         /// <summary>

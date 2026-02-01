@@ -113,15 +113,33 @@ namespace NewsletterApp.Infrastructure.Services
                 return "GenericNewsletter";
 
             // Clean the interest value
-            var cleanInterest = interest.Trim();
+            var cleanInterest = NormalizeInterestKey(interest);
 
+            // Try exact match first
             if (InterestTemplateMap.TryGetValue(cleanInterest, out var templateName))
             {
                 return templateName;
             }
 
+            // Try fallback by checking normalized keys in dictionary
+            foreach (var kvp in InterestTemplateMap)
+            {
+                if (NormalizeInterestKey(kvp.Key).Equals(cleanInterest, StringComparison.OrdinalIgnoreCase))
+                {
+                    return kvp.Value;
+                }
+            }
+
             _logger.LogInformation("No specific template for interest '{Interest}', using generic", interest);
             return "GenericNewsletter";
+        }
+
+        private static string NormalizeInterestKey(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input)) return string.Empty;
+            // Remove whitespace and non-alphanumeric characters to create a normalized key
+            var chars = input.Where(c => char.IsLetterOrDigit(c)).ToArray();
+            return new string(chars);
         }
 
         public string GetTemplateNameForSubscriberType(string subscriberType)
@@ -147,6 +165,42 @@ namespace NewsletterApp.Infrastructure.Services
 
             var templatePath = Path.Combine(_templatesDirectory, $"{templateName}.html");
             return File.Exists(templatePath);
+        }
+
+        public string GetBestTemplateName(string explicitTemplate, string subscriberType, IEnumerable<string> interests)
+        {
+            // Priority 1: explicit template
+            if (!string.IsNullOrWhiteSpace(explicitTemplate) && TemplateExists(explicitTemplate))
+            {
+                return explicitTemplate;
+            }
+
+            // Priority 2: subscriber type mapping
+            if (!string.IsNullOrWhiteSpace(subscriberType))
+            {
+                var typeTemplate = GetTemplateNameForSubscriberType(subscriberType);
+                if (TemplateExists(typeTemplate))
+                {
+                    return typeTemplate;
+                }
+            }
+
+            // Priority 3: try interests (prefer the first matching mapped interest)
+            if (interests != null)
+            {
+                foreach (var interest in interests)
+                {
+                    if (string.IsNullOrWhiteSpace(interest)) continue;
+                    var interestTemplate = GetTemplateNameForInterest(interest);
+                    if (TemplateExists(interestTemplate))
+                    {
+                        return interestTemplate;
+                    }
+                }
+            }
+
+            // Fallback to generic
+            return "GenericNewsletter";
         }
 
         private async Task<string> LoadTemplateAsync(string templateName)

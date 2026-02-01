@@ -1,97 +1,217 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{Subject}}</title>
-</head>
+  </head>
 
-<body
-    style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #dbeafe;">
-    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%"
-        style="background-color: #dbeafe;">
-        <tr>
-            <td align="center" style="padding: 40px 20px;">
-                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600"
-                    style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);">
-                    <!-- Header -->
-                    <tr>
-                        <td
-                            style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); padding: 50px 30px; text-align: center;">
-                            <div style="font-size: 48px; margin-bottom: 16px;">🌍</div>
-                            <h1 style="color: #ffffff; margin: 0; font-size: 26px; font-weight: 700;">{{Subject}}</h1>
-                            <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0; font-size: 14px;">Premium Land
-                                Opportunities</p>
-                        </td>
-                    </tr>
+  <body
+    style="
+      margin: 0;
+      padding: 0;
+      font-family: &quot;Segoe UI&quot;, Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #dbeafe;
+    "
+  >
+    <table
+      role="presentation"
+      cellspacing="0"
+      cellpadding="0"
+      border="0"
+      width="100%"
+      style="background-color: #dbeafe"
+    >
+      <tr>
+        <td align="center" style="padding: 40px 20px">
+          <table
+            role="presentation"
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            width="600"
+            style="
+              max-width: 600px;
+              margin: 0 auto;
+              background-color: #ffffff;
+              border-radius: 16px;
+              overflow: hidden;
+              box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <!-- Header -->
+            <tr>
+              <td
+                style="
+                  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+                  padding: 50px 30px;
+                  text-align: center;
+                "
+              >
+                <div style="font-size: 48px; margin-bottom: 16px">🌍</div>
+                <h1
+                  style="
+                    color: #ffffff;
+                    margin: 0;
+                    font-size: 26px;
+                    font-weight: 700;
+                  "
+                >
+                  {{Subject}}
+                </h1>
+                <p
+                  style="
+                    color: rgba(255, 255, 255, 0.9);
+                    margin: 10px 0 0;
+                    font-size: 14px;
+                  "
+                >
+                  Premium Land Opportunities
+                </p>
+              </td>
+            </tr>
 
-                    <!-- Greeting -->
-                    <tr>
-                        <td style="padding: 40px 30px 20px;">
-                            <p style="margin: 0; font-size: 20px; color: #1e40af; font-weight: 600;">Dear {{FirstName}},
-                            </p>
-                            <p style="margin: 10px 0 0; font-size: 15px; color: #1e3a8a;">Exclusive land sourcing
-                                opportunities for savvy investors.</p>
-                        </td>
-                    </tr>
+            <!-- Greeting -->
+            <tr>
+              <td style="padding: 40px 30px 20px">
+                <p
+                  style="
+                    margin: 0;
+                    font-size: 20px;
+                    color: #1e40af;
+                    font-weight: 600;
+                  "
+                >
+                  Dear {{FirstName}} {{LastName}},
+                </p>
+                <p style="margin: 10px 0 0; font-size: 15px; color: #1e3a8a">
+                  Exclusive land sourcing opportunities for savvy investors.
+                </p>
+              </td>
+            </tr>
 
-                    <!-- Body Content -->
-                    <tr>
-                        <td style="padding: 0 30px 30px; line-height: 1.8; color: #1e3a8a; font-size: 16px;">
-                            {{Content}}
-                        </td>
-                    </tr>
+            <!-- Body Content -->
+            <tr>
+              <td
+                style="
+                  padding: 0 30px 30px;
+                  line-height: 1.8;
+                  color: #1e3a8a;
+                  font-size: 16px;
+                "
+              >
+                {{Content}}
+              </td>
+            </tr>
 
-                    <!-- Feature Highlights -->
-                    <tr>
-                        <td style="padding: 0 30px 30px;">
-                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
-                                <tr>
-                                    <td
-                                        style="background: #eff6ff; border-radius: 12px; padding: 20px; border: 1px solid #bfdbfe;">
-                                        <p
-                                            style="margin: 0; font-size: 13px; color: #1e40af; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
-                                            Land Investment Benefits</p>
-                                        <ul
-                                            style="margin: 12px 0 0; padding-left: 20px; color: #1e3a8a; font-size: 14px; line-height: 1.8;">
-                                            <li>Build your dream from scratch</li>
-                                            <li>Long-term investment potential</li>
-                                            <li>Full customization freedom</li>
-                                            <li>Strategic location options</li>
-                                        </ul>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-
-                    <!-- Action Section -->
-                    <tr>
-                        <td style="padding: 30px; text-align: center; background-color: #eff6ff;">
-                            <p style="color: #1e40af; font-size: 14px; margin: 0 0 20px;">
-                                No longer seeking land opportunities? Manage your preferences below.
-                            </p>
-                            <a href="{{UnsubscribeLink}}"
-                                style="display: inline-block; background-color: #dc2626; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px;">
-                                Unsubscribe
-                            </a>
-                        </td>
-                    </tr>
-
-                    <!-- Footer -->
-                    <tr>
-                        <td style="padding: 24px 30px; background-color: #1e3a8a; text-align: center;">
-                            <p style="margin: 0; font-size: 12px; color: #bfdbfe; line-height: 1.5;">
-                                &copy; {{Year}} Newsletter Hub. All rights reserved.<br />
-                                You received this because you're interested in Land Sourcing.
-                            </p>
-                        </td>
-                    </tr>
+            <!-- Feature Highlights -->
+            <tr>
+              <td style="padding: 0 30px 30px">
+                <table
+                  role="presentation"
+                  cellspacing="0"
+                  cellpadding="0"
+                  border="0"
+                  width="100%"
+                >
+                  <tr>
+                    <td
+                      style="
+                        background: #eff6ff;
+                        border-radius: 12px;
+                        padding: 20px;
+                        border: 1px solid #bfdbfe;
+                      "
+                    >
+                      <p
+                        style="
+                          margin: 0;
+                          font-size: 13px;
+                          color: #1e40af;
+                          font-weight: 600;
+                          text-transform: uppercase;
+                          letter-spacing: 0.5px;
+                        "
+                      >
+                        Land Investment Benefits
+                      </p>
+                      <ul
+                        style="
+                          margin: 12px 0 0;
+                          padding-left: 20px;
+                          color: #1e3a8a;
+                          font-size: 14px;
+                          line-height: 1.8;
+                        "
+                      >
+                        <li>Build your dream from scratch</li>
+                        <li>Long-term investment potential</li>
+                        <li>Full customization freedom</li>
+                        <li>Strategic location options</li>
+                      </ul>
+                    </td>
+                  </tr>
                 </table>
-            </td>
-        </tr>
-    </table>
-</body>
+              </td>
+            </tr>
 
+            <!-- Action Section -->
+            <tr>
+              <td
+                style="
+                  padding: 30px;
+                  text-align: center;
+                  background-color: #eff6ff;
+                "
+              >
+                <p style="color: #1e40af; font-size: 14px; margin: 0 0 20px">
+                  No longer seeking land opportunities? Manage your preferences
+                  below.
+                </p>
+                <a
+                  href="{{UnsubscribeLink}}"
+                  style="
+                    display: inline-block;
+                    background-color: #dc2626;
+                    color: #ffffff;
+                    padding: 14px 28px;
+                    text-decoration: none;
+                    border-radius: 8px;
+                    font-weight: 600;
+                    font-size: 14px;
+                  "
+                >
+                  Unsubscribe
+                </a>
+              </td>
+            </tr>
+
+            <!-- Footer -->
+            <tr>
+              <td
+                style="
+                  padding: 24px 30px;
+                  background-color: #1e3a8a;
+                  text-align: center;
+                "
+              >
+                <p
+                  style="
+                    margin: 0;
+                    font-size: 12px;
+                    color: #bfdbfe;
+                    line-height: 1.5;
+                  "
+                >
+                  &copy; {{Year}} Newsletter Hub. All rights reserved.<br />
+                  You received this because you're interested in {{Interests}}.
+                  Subscriber type: {{Type}}.
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
 </html>

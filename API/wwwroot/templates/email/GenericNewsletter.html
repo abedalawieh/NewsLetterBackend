@@ -1,67 +1,163 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{Subject}}</title>
-</head>
-<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f5;">
-    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f4f4f5;">
-        <tr>
-            <td align="center" style="padding: 40px 20px;">
-                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-                    <!-- Header -->
-                    <tr>
-                        <td style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); padding: 40px 30px; text-align: center;">
-                            <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">{{Subject}}</h1>
-                        </td>
-                    </tr>
+  </head>
+  <body
+    style="
+      margin: 0;
+      padding: 0;
+      font-family: &quot;Segoe UI&quot;, Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f4f5;
+    "
+  >
+    <table
+      role="presentation"
+      cellspacing="0"
+      cellpadding="0"
+      border="0"
+      width="100%"
+      style="background-color: #f4f4f5"
+    >
+      <tr>
+        <td align="center" style="padding: 40px 20px">
+          <table
+            role="presentation"
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            width="600"
+            style="
+              max-width: 600px;
+              margin: 0 auto;
+              background-color: #ffffff;
+              border-radius: 12px;
+              overflow: hidden;
+              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <!-- Header -->
+            <tr>
+              <td
+                style="
+                  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+                  padding: 40px 30px;
+                  text-align: center;
+                "
+              >
+                <h1
+                  style="
+                    color: #ffffff;
+                    margin: 0;
+                    font-size: 28px;
+                    font-weight: 700;
+                    letter-spacing: -0.5px;
+                  "
+                >
+                  {{Subject}}
+                </h1>
+              </td>
+            </tr>
 
-                    <!-- Greeting -->
-                    <tr>
-                        <td style="padding: 40px 30px 20px;">
-                            <p style="margin: 0; font-size: 18px; color: #1e293b; font-weight: 600;">Hello {{FirstName}},</p>
-                        </td>
-                    </tr>
+            <!-- Greeting -->
+            <tr>
+              <td style="padding: 40px 30px 20px">
+                <p
+                  style="
+                    margin: 0;
+                    font-size: 18px;
+                    color: #1e293b;
+                    font-weight: 600;
+                  "
+                >
+                  Hello {{FirstName}},
+                </p>
+              </td>
+            </tr>
 
-                    <!-- Body Content -->
-                    <tr>
-                        <td style="padding: 0 30px 30px; line-height: 1.7; color: #334155; font-size: 16px;">
-                            {{Content}}
-                        </td>
-                    </tr>
+            <!-- Body Content -->
+            <tr>
+              <td
+                style="
+                  padding: 0 30px 30px;
+                  line-height: 1.7;
+                  color: #334155;
+                  font-size: 16px;
+                "
+              >
+                {{Content}}
+              </td>
+            </tr>
 
-                    <!-- Divider -->
-                    <tr>
-                        <td style="padding: 0 30px;">
-                            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 0;" />
-                        </td>
-                    </tr>
+            <!-- Divider -->
+            <tr>
+              <td style="padding: 0 30px">
+                <hr
+                  style="border: none; border-top: 1px solid #e2e8f0; margin: 0"
+                />
+              </td>
+            </tr>
 
-                    <!-- Action Section -->
-                    <tr>
-                        <td style="padding: 30px; text-align: center; background-color: #f8fafc;">
-                            <p style="color: #64748b; font-size: 14px; margin: 0 0 20px;">
-                                Not interested in this topic? Update your preferences or unsubscribe below.
-                            </p>
-                            <a href="{{UnsubscribeLink}}" style="display: inline-block; background-color: #ef4444; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px; transition: background-color 0.2s;">
-                                Unsubscribe
-                            </a>
-                        </td>
-                    </tr>
+            <!-- Action Section -->
+            <tr>
+              <td
+                style="
+                  padding: 30px;
+                  text-align: center;
+                  background-color: #f8fafc;
+                "
+              >
+                <p style="color: #64748b; font-size: 14px; margin: 0 0 20px">
+                  Not interested in this topic? Update your preferences or
+                  unsubscribe below.
+                </p>
+                <a
+                  href="{{UnsubscribeLink}}"
+                  style="
+                    display: inline-block;
+                    background-color: #ef4444;
+                    color: #ffffff;
+                    padding: 14px 28px;
+                    text-decoration: none;
+                    border-radius: 8px;
+                    font-weight: 600;
+                    font-size: 14px;
+                    transition: background-color 0.2s;
+                  "
+                >
+                  Unsubscribe
+                </a>
+              </td>
+            </tr>
 
-                    <!-- Footer -->
-                    <tr>
-                        <td style="padding: 24px 30px; background-color: #1e293b; text-align: center;">
-                            <p style="margin: 0; font-size: 12px; color: #94a3b8; line-height: 1.5;">
-                                &copy; {{Year}} Newsletter Hub. All rights reserved.<br />
-                                You received this email because you signed up on our website.
-                            </p>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
+            <!-- Footer -->
+            <tr>
+              <td
+                style="
+                  padding: 24px 30px;
+                  background-color: #1e293b;
+                  text-align: center;
+                "
+              >
+                <p
+                  style="
+                    margin: 0;
+                    font-size: 12px;
+                    color: #94a3b8;
+                    line-height: 1.5;
+                  "
+                >
+                  &copy; {{Year}} Newsletter Hub. All rights reserved.<br />
+                  You received this because you're interested in {{Interests}}.
+                  Subscriber type: {{Type}}.
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
     </table>
-</body>
+  </body>
 </html>
