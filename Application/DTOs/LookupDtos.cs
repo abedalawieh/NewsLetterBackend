@@ -11,6 +11,7 @@ namespace NewsletterApp.Application.DTOs
         public string Label { get; set; }
         public int SortOrder { get; set; }
         public bool IsActive { get; set; }
+        public bool IsSystem { get; set; }
     }
 
     public class CreateLookupDto

@@ -22,15 +22,21 @@
 
                 <div class="row mb-4">
                     <div class="col-md-6">
-                        <label class="form-label text-secondary small text-uppercase fw-bold">Target Audience</label>
-                        <select asp-for="Input.TargetSubscriberType" class="form-select bg-dark text-white border-0 p-3 shadow-sm">
-                            <option value="">All Subscribers</option>
+                        <label class="text-uppercase-label">Target Audience</label>
+                        <div class="premium-form-grid">
+                            <label class="premium-check-item" for="type_all">
+                                <input class="premium-check-input" type="radio" asp-for="Input.TargetSubscriberType" value="" id="type_all" checked>
+                                <span class="premium-check-label">All Subscribers</span>
+                            </label>
                             @foreach (var type in Model.SubscriberTypes)
                             {
-                                <option value="@type.Value">@type.Label</option>
+                                <label class="premium-check-item" for="type_@type.Value">
+                                    <input class="premium-check-input" type="radio" asp-for="Input.TargetSubscriberType" value="@type.Value" id="type_@type.Value">
+                                    <span class="premium-check-label">@type.Label</span>
+                                </label>
                             }
-                        </select>
-                        <small class="text-muted">Filter recipients by subscriber type</small>
+                        </div>
+                        <small class="text-muted mt-2 d-block">Filter recipients by subscriber type</small>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label text-secondary small text-uppercase fw-bold">Email Template</label>
@@ -46,16 +52,16 @@
                 </div>
 
                 <div class="mb-4">
-                    <label class="form-label text-secondary small text-uppercase fw-bold">Target Interests</label>
-                    <div class="d-flex flex-wrap gap-3 p-4 bg-dark rounded">
+                    <label class="text-uppercase-label">Target Interests</label>
+                    <div class="premium-form-grid p-4 bg-dark rounded">
                         @foreach (var interest in Model.AvailableInterests)
                         {
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="TargetInterests" value="@interest.Value" id="int_@interest.Value">
-                                <label class="form-check-label text-light" for="int_@interest.Value">
+                            <label class="premium-check-item" for="int_@interest.Value">
+                                <input class="premium-check-input" type="checkbox" name="TargetInterests" value="@interest.Value" id="int_@interest.Value">
+                                <span class="premium-check-label">
                                     @interest.Label
-                                </label>
-                            </div>
+                                </span>
+                            </label>
                         }
                     </div>
                     <small class="text-muted">Select the interests to target. If you select a single interest, the matching template will be used automatically.</small>
@@ -89,3 +95,32 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        // Real-time selection highlighting
+        document.querySelectorAll('.premium-check-input').forEach(input => {
+            input.addEventListener('change', function() {
+                const isRadio = this.type === 'radio';
+                const name = this.name;
+                
+                if (isRadio) {
+                    document.querySelectorAll(`.premium-check-input[name="${name}"]`).forEach(r => {
+                        r.closest('.premium-check-item').classList.remove('selected');
+                    });
+                }
+                
+                if (this.checked) {
+                    this.closest('.premium-check-item').classList.add('selected');
+                } else {
+                    this.closest('.premium-check-item').classList.remove('selected');
+                }
+            });
+            
+            // Initial state
+            if (input.checked) {
+                input.closest('.premium-check-item').classList.add('selected');
+            }
+        });
+    </script>
+}

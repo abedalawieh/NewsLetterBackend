@@ -46,11 +46,11 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Metadata
 
         public async Task<IActionResult> OnPostCreateAsync()
         {
-            if (!ModelState.IsValid)
+            // Remove unrelated model errors to prevent cross-form validation issues
+            ModelState.Clear();
+            if (string.IsNullOrWhiteSpace(NewItem.Category) || string.IsNullOrWhiteSpace(NewItem.Value) || string.IsNullOrWhiteSpace(NewItem.Label))
             {
-                Categories = await _lookupService.GetAllCategoriesAsync();
-                var errorMsg = string.Join("; ", ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)));
-                TempData["Error"] = string.IsNullOrEmpty(errorMsg) ? "Please fill in all required fields." : errorMsg;
+                TempData["Error"] = "Category, Code and Label are all required.";
                 return RedirectToPage();
             }
 
@@ -69,14 +69,15 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Metadata
 
         public async Task<IActionResult> OnPostEditAsync()
         {
-            // We only validate the relevant fields for edit
+            ModelState.Clear();
             if (string.IsNullOrEmpty(EditItem.Label))
             {
-                Categories = await _lookupService.GetAllCategoriesAsync();
-                return Page();
+                TempData["Error"] = "Label is required.";
+                return RedirectToPage();
             }
 
             await _lookupService.UpdateItemAsync(EditItemId, EditItem);
+            TempData["Success"] = "Item updated successfully.";
             return RedirectToPage();
         }
 
@@ -99,26 +100,46 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Metadata
             return RedirectToPage();
         }
         [BindProperty]
-        public string NewCategoryName { get; set; }
+        public string? NewCategoryName { get; set; }
         
         [BindProperty]
-        public string NewCategoryDescription { get; set; }
+        public string? NewCategoryDescription { get; set; }
 
         public async Task<IActionResult> OnPostCreateCategoryAsync()
         {
             if (string.IsNullOrWhiteSpace(NewCategoryName))
             {
-                Categories = await _lookupService.GetAllCategoriesAsync();
-                return Page();
+                TempData["Error"] = "Category name is required.";
+                return RedirectToPage();
             }
 
-            await _lookupService.CreateCategoryAsync(NewCategoryName, NewCategoryDescription);
+            try
+            {
+                await _lookupService.CreateCategoryAsync(NewCategoryName, NewCategoryDescription);
+                TempData["Success"] = $"Category '{NewCategoryName}' created successfully!";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+            }
             return RedirectToPage();
         }
 
+        private readonly string[] _systemCategories = { "SubscriberType", "CommunicationMethod", "Interest" };
+
         public async Task<IActionResult> OnPostDeleteAsync(Guid id)
         {
+            var categories = await _lookupService.GetAllCategoriesAsync();
+            var item = categories.SelectMany(c => c.Items).FirstOrDefault(i => i.Id == id);
+            
+            if (item != null && item.IsSystem)
+            {
+                TempData["Error"] = $"Cannot delete '{item.Label}' because it is a system-defined item.";
+                return RedirectToPage();
+            }
+
             await _lookupService.DeleteItemAsync(id);
+            TempData["Success"] = "Item deleted successfully.";
             return RedirectToPage();
         }
 
@@ -126,6 +147,15 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Metadata
         {
             try
             {
+                var categories = await _lookupService.GetAllCategoriesAsync();
+                var category = categories.FirstOrDefault(c => c.Id == id);
+                
+                if (category != null && category.IsSystem)
+                {
+                    TempData["Error"] = $"Cannot delete system category '{category.Name}'.";
+                    return RedirectToPage();
+                }
+
                 await _lookupService.DeleteCategoryAsync(id);
                 TempData["Success"] = "Category deleted successfully!";
             }

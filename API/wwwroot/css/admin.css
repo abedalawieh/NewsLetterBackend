@@ -103,20 +103,27 @@ body.admin-body {
 }
 
 .table thead th {
-    background: rgba(15, 23, 42, 0.8);
-    border-bottom: 2px solid var(--admin-card-border);
-    color: #94a3b8;
-    font-weight: 600;
+    background: rgba(15, 23, 42, 0.6) !important;
+    border-bottom: 1px solid var(--admin-card-border);
+    color: var(--admin-primary);
+    font-weight: 700;
     text-transform: uppercase;
-    font-size: 0.7rem;
-    letter-spacing: 0.05em;
-    padding: 1rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    padding: 1.25rem 1rem;
 }
 
 .table tbody td {
     border-bottom: 1px solid var(--admin-card-border);
     padding: 1.25rem 1rem;
     color: var(--admin-text) !important;
+    /* Force visibility */
+    background: transparent !important;
+}
+
+.table-hover tbody tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+    color: white;
 }
 
 /* Action Elements - Buttons & Badges */
@@ -210,6 +217,102 @@ pre {
     --bs-alert-color: #f87171;
     --bs-alert-bg: rgba(239, 68, 68, 0.1);
     border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* Forms & Inputs visibility fixes */
+.form-control,
+.form-select {
+    background-color: var(--admin-bg-dark);
+    border: 1px solid var(--admin-card-border);
+    color: var(--admin-text);
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: #111827;
+    border-color: var(--admin-primary);
+    color: white;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+}
+
+/* Fix for black placeholders */
+.form-control::placeholder {
+    color: #64748b !important;
+    opacity: 1;
+    /* Firefox */
+}
+
+:-ms-input-placeholder {
+    color: #64748b !important;
+}
+
+::-ms-input-placeholder {
+    color: #64748b !important;
+}
+
+/* Premium Checkbox/Radio Blocks (to match screenshot) */
+.premium-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+    width: 100%;
+}
+
+.premium-check-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    /* As seen in screenshot */
+    border: 2px solid transparent;
+    border-radius: 1rem;
+    padding: 1.25rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 80px;
+}
+
+.premium-check-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.premium-check-input {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 1rem;
+    cursor: pointer;
+    accent-color: var(--admin-primary);
+}
+
+.premium-check-label {
+    color: #1e293b;
+    /* Dark text on white background */
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0;
+    cursor: pointer;
+    flex-grow: 1;
+}
+
+/* Selected state for premium blocks */
+.premium-check-item.selected {
+    border-color: var(--admin-primary);
+    background: #f0f9ff;
+}
+
+/* Typography Helpers */
+.text-uppercase-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+    color: #94a3b8;
+    margin-bottom: 0.75rem;
+    display: block;
 }
 
 /* Custom Scrollbar for Admin Intelligence */

@@ -11,6 +11,7 @@ namespace NewsletterApp.Application.Interfaces
         IQueryable<LookupCategory> Categories { get; }
         IQueryable<LookupCategory> AllCategories { get; }
         Task<IEnumerable<LookupCategory>> GetAllCategoriesAsync();
+        Task<LookupCategory> GetCategoryByIdAsync(Guid id);
         Task<LookupCategory> GetCategoryByNameAsync(string name);
         Task<IEnumerable<LookupItem>> GetItemsByCategoryAsync(string categoryName);
         Task<LookupItem> GetItemByIdAsync(Guid id);

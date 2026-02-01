@@ -89,17 +89,6 @@
                                     <a asp-page="Edit" asp-route-id="@subscriber.Id" class="btn btn-outline-info">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <button type="button" class="btn btn-outline-warning" 
-                                            onclick="document.getElementById('toggleForm-@subscriber.Id').submit();">
-                                        @if (subscriber.IsActive)
-                                        {
-                                            <span><i class="fas fa-power-off"></i> Disable</span>
-                                        }
-                                        else
-                                        {
-                                            <span><i class="fas fa-power-off"></i> Enable</span>
-                                        }
-                                    </button>
                                     <button type="button" class="btn btn-outline-danger" 
                                             onclick="confirmDelete('@subscriber.Id', '@subscriber.Email')">
                                         <i class="fas fa-trash"></i> Delete
@@ -199,11 +188,6 @@
     </nav>
 }
 
-<!-- Toggle Forms -->
-@foreach (var subscriber in Model.Subscribers)
-{
-    <form id="toggleForm-@subscriber.Id" method="post" asp-page-handler="Toggle" asp-route-id="@subscriber.Id" style="display:none;"></form>
-}
 
 <!-- Delete Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1">

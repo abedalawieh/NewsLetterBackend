@@ -96,9 +96,13 @@ namespace NewsletterApp.Infrastructure.Data
                 switch (entry.State)
                 {
                     case EntityState.Deleted:
-                        entry.State = EntityState.Modified;
-                        entry.Entity.IsDeleted = true;
-                        entry.Entity.DeletedAt = DateTime.UtcNow;
+                        // If it's already soft-deleted, we allow permanent deletion
+                        if (!entry.Entity.IsDeleted)
+                        {
+                            entry.State = EntityState.Modified;
+                            entry.Entity.IsDeleted = true;
+                            entry.Entity.DeletedAt = DateTime.UtcNow;
+                        }
                         break;
                 }
             }

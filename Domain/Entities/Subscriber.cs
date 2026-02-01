@@ -53,6 +53,29 @@ namespace NewsletterApp.Domain.Entities
             return subscriber;
         }
 
+        public void UpdateDetails(
+            string firstName,
+            string lastName,
+            string type,
+            IEnumerable<string> communicationMethods,
+            IEnumerable<string> interests)
+        {
+            if (string.IsNullOrWhiteSpace(firstName)) throw new ArgumentException("First name is required");
+            if (string.IsNullOrWhiteSpace(lastName)) throw new ArgumentException("Last name is required");
+
+            FirstName = firstName;
+            LastName = lastName;
+            Type = type;
+            
+            CommunicationMethods.Clear();
+            CommunicationMethods.AddRange(communicationMethods);
+            
+            Interests.Clear();
+            Interests.AddRange(interests);
+            
+            UpdatedAt = DateTime.UtcNow;
+        }
+
         public void Deactivate(string reason = "")
         {
             IsActive = false;

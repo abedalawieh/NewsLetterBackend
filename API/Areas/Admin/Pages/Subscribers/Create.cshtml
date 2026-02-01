@@ -1,7 +1,7 @@
-@page "{id:guid}"
-@model NewsletterApp.API.Areas.Admin.Pages.Subscribers.EditModel
+@page
+@model NewsletterApp.API.Areas.Admin.Pages.Subscribers.CreateModel
 @{
-    ViewData["Title"] = "Update Subscriber";
+    ViewData["Title"] = "New Subscriber";
 }
 
 <div class="row justify-content-center">
@@ -10,10 +10,7 @@
             <a asp-page="Index" class="btn btn-outline-secondary rounded-circle px-3 py-2 me-4">
                 <i class="fas fa-arrow-left"></i>
             </a>
-            <div>
-                <h2 class="fw-bold mb-0">Update @Model.Subscriber?.FirstName</h2>
-                <p class="text-secondary small mb-0">Managing system access and preferences for @Model.Subscriber?.Email</p>
-            </div>
+            <h2 class="fw-bold mb-0">Add New Subscriber</h2>
         </div>
 
         <div class="card p-5">
@@ -23,14 +20,20 @@
                 <div class="row g-4 mb-4">
                     <div class="col-md-6">
                         <label asp-for="Input.FirstName" class="text-uppercase-label">First Name</label>
-                        <input asp-for="Input.FirstName" class="form-control" required />
+                        <input asp-for="Input.FirstName" class="form-control" placeholder="e.g., John" required />
                         <span asp-validation-for="Input.FirstName" class="text-danger small"></span>
                     </div>
                     <div class="col-md-6">
                         <label asp-for="Input.LastName" class="text-uppercase-label">Last Name</label>
-                        <input asp-for="Input.LastName" class="form-control" required />
+                        <input asp-for="Input.LastName" class="form-control" placeholder="e.g., Doe" required />
                         <span asp-validation-for="Input.LastName" class="text-danger small"></span>
                     </div>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Input.Email" class="text-uppercase-label">Email Address</label>
+                    <input asp-for="Input.Email" class="form-control" placeholder="john.doe@example.com" required />
+                    <span asp-validation-for="Input.Email" class="text-danger small"></span>
                 </div>
 
                 <div class="mb-5">
@@ -38,7 +41,7 @@
                     <div class="premium-form-grid">
                         @foreach (var type in Model.SubscriberTypes)
                         {
-                            <label class="premium-check-item @(Model.Input.Type == type.Value ? "selected" : "")" for="type_@type.Value">
+                            <label class="premium-check-item" for="type_@type.Value">
                                 <input class="premium-check-input" type="radio" asp-for="Input.Type" value="@type.Value" id="type_@type.Value" required>
                                 <span class="premium-check-label">@type.Label</span>
                             </label>
@@ -52,9 +55,8 @@
                     <div class="premium-form-grid">
                         @foreach (var method in Model.CommunicationMethods)
                         {
-                            var isChecked = Model.Input.CommunicationMethods.Contains(method.Value);
-                            <label class="premium-check-item @(isChecked ? "selected" : "")" for="meth_@method.Value">
-                                <input class="premium-check-input" type="checkbox" name="SelectedMethods" value="@method.Value" id="meth_@method.Value" @(isChecked ? "checked" : "")>
+                            <label class="premium-check-item" for="meth_@method.Value">
+                                <input class="premium-check-input" type="checkbox" name="SelectedMethods" value="@method.Value" id="meth_@method.Value">
                                 <span class="premium-check-label">@method.Label</span>
                             </label>
                         }
@@ -66,9 +68,8 @@
                     <div class="premium-form-grid">
                         @foreach (var interest in Model.Interests)
                         {
-                            var isChecked = Model.Input.Interests.Contains(interest.Value);
-                            <label class="premium-check-item @(isChecked ? "selected" : "")" for="int_@interest.Value">
-                                <input class="premium-check-input" type="checkbox" name="SelectedInterests" value="@interest.Value" id="int_@interest.Value" @(isChecked ? "checked" : "")>
+                            <label class="premium-check-item" for="int_@interest.Value">
+                                <input class="premium-check-input" type="checkbox" name="SelectedInterests" value="@interest.Value" id="int_@interest.Value">
                                 <span class="premium-check-label">@interest.Label</span>
                             </label>
                         }
@@ -76,9 +77,9 @@
                 </div>
 
                 <div class="d-flex justify-content-end gap-3 pt-4 border-top border-secondary border-opacity-10">
-                    <a asp-page="Index" class="btn btn-outline-secondary px-4 py-2">Discard Changes</a>
+                    <a asp-page="Index" class="btn btn-outline-secondary px-4 py-2">Cancel</a>
                     <button type="submit" class="btn btn-primary px-5 py-2 fw-bold">
-                        <i class="fas fa-save me-2"></i> Save Changes
+                        <i class="fas fa-user-plus me-2"></i> Create Subscriber
                     </button>
                 </div>
             </form>
@@ -106,6 +107,11 @@
                     this.closest('.premium-check-item').classList.remove('selected');
                 }
             });
+            
+            // Initial state
+            if (input.checked) {
+                input.closest('.premium-check-item').classList.add('selected');
+            }
         });
     </script>
 }

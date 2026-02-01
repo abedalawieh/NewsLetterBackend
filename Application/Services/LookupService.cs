@@ -35,7 +35,8 @@ namespace NewsletterApp.Application.Services
             var category = await _repository.GetCategoryByNameAsync(dto.Category);
             if (category == null) throw new Exception("Category not found");
 
-            var item = LookupItem.Create(category.Id, dto.Value, dto.Label, dto.SortOrder);
+            // Newly created items via UI are NOT system items
+            var item = LookupItem.Create(category.Id, dto.Value, dto.Label, dto.SortOrder, isSystem: false);
             var created = await _repository.AddItemAsync(item);
             return TranslateToDto(created);
         }
@@ -65,7 +66,8 @@ namespace NewsletterApp.Application.Services
             var existing = await _repository.GetCategoryByNameAsync(name);
             if (existing != null) throw new InvalidOperationException($"Category '{name}' already exists.");
 
-            var category = LookupCategory.Create(name, description);
+            // Newly created categories via UI are NOT system categories
+            var category = LookupCategory.Create(name, description, isSystem: false);
             var created = await _repository.AddCategoryAsync(category);
             return TranslateCategoryToDto(created);
         }
@@ -88,6 +90,7 @@ namespace NewsletterApp.Application.Services
                 Id = category.Id,
                 Name = category.Name,
                 Description = category.Description,
+                IsSystem = category.IsSystem || new[] { "SubscriberType", "CommunicationMethod", "Interest" }.Contains(category.Name),
                 Items = category.Items?.Select(TranslateToDto).ToList() ?? new List<LookupDto>()
             };
         }
@@ -100,7 +103,8 @@ namespace NewsletterApp.Application.Services
                 Value = item.Value,
                 Label = item.Label,
                 SortOrder = item.SortOrder,
-                IsActive = item.IsActive
+                IsActive = item.IsActive,
+                IsSystem = item.IsSystem
             };
         }
     }

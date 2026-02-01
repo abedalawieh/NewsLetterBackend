@@ -16,17 +16,20 @@ namespace NewsletterApp.Domain.Entities
         public string CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
+        public bool IsSystem { get; set; } = false;
 
         public ICollection<LookupItem> Items { get; set; } = new List<LookupItem>();
 
-        public static LookupCategory Create(string name, string description = "")
+        public static LookupCategory Create(string name, string description = "", bool isSystem = false)
         {
             return new LookupCategory
             {
                 Id = Guid.NewGuid(),
                 Name = name,
                 Description = description,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = isSystem ? "System" : "Admin",
+                IsSystem = isSystem
             };
         }
     }
@@ -48,8 +51,9 @@ namespace NewsletterApp.Domain.Entities
         public string CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
+        public bool IsSystem { get; set; } = false;
 
-        public static LookupItem Create(Guid categoryId, string value, string label, int sortOrder = 0)
+        public static LookupItem Create(Guid categoryId, string value, string label, int sortOrder = 0, bool isSystem = false)
         {
             return new LookupItem
             {
@@ -58,7 +62,9 @@ namespace NewsletterApp.Domain.Entities
                 Value = value,
                 Label = label,
                 SortOrder = sortOrder,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = isSystem ? "System" : "Admin",
+                IsSystem = isSystem
             };
         }
     }

@@ -69,28 +69,48 @@ namespace NewsletterApp.Infrastructure.Data
 
             if (!await _context.LookupCategories.AnyAsync())
             {
-                var catSubscriberType = LookupCategory.Create("SubscriberType", "Classification of subscribers");
-                var catCommMethod = LookupCategory.Create("CommunicationMethod", "Preferred way to reach subscribers");
-                var catInterest = LookupCategory.Create("Interest", "Topics of interest");
+                var catSubscriberType = LookupCategory.Create("SubscriberType", "Classification of subscribers", isSystem: true);
+                var catCommMethod = LookupCategory.Create("CommunicationMethod", "Preferred way to reach subscribers", isSystem: true);
+                var catInterest = LookupCategory.Create("Interest", "Topics of interest", isSystem: true);
 
                 _context.LookupCategories.AddRange(catSubscriberType, catCommMethod, catInterest);
                 await _context.SaveChangesAsync();
 
                 _context.LookupItems.AddRange(
-                    LookupItem.Create(catSubscriberType.Id, "HomeBuilder", "Home Builder", 1),
-                    LookupItem.Create(catSubscriberType.Id, "HomeBuyer", "Home Buyer", 2),
+                    LookupItem.Create(catSubscriberType.Id, "HomeBuilder", "Home Builder", 1, isSystem: true),
+                    LookupItem.Create(catSubscriberType.Id, "HomeBuyer", "Home Buyer", 2, isSystem: true),
                     
-                    LookupItem.Create(catCommMethod.Id, "Email", "Email", 1),
-                    LookupItem.Create(catCommMethod.Id, "SMS", "SMS", 2),
-                    LookupItem.Create(catCommMethod.Id, "Phone", "Phone", 3),
-                    LookupItem.Create(catCommMethod.Id, "Post", "Post", 4),
+                    LookupItem.Create(catCommMethod.Id, "Email", "Email", 1, isSystem: true),
+                    LookupItem.Create(catCommMethod.Id, "SMS", "SMS", 2, isSystem: true),
+                    LookupItem.Create(catCommMethod.Id, "Phone", "Phone", 3, isSystem: true),
+                    LookupItem.Create(catCommMethod.Id, "Post", "Post", 4, isSystem: true),
 
-                    LookupItem.Create(catInterest.Id, "Houses", "Houses", 1),
-                    LookupItem.Create(catInterest.Id, "Apartments", "Apartments", 2),
-                    LookupItem.Create(catInterest.Id, "SharedOwnership", "Shared Ownership", 3),
-                    LookupItem.Create(catInterest.Id, "Rental", "Rental", 4),
-                    LookupItem.Create(catInterest.Id, "LandSourcing", "Land Sourcing", 5)
+                    LookupItem.Create(catInterest.Id, "Houses", "Houses", 1, isSystem: true),
+                    LookupItem.Create(catInterest.Id, "Apartments", "Apartments", 2, isSystem: true),
+                    LookupItem.Create(catInterest.Id, "SharedOwnership", "Shared Ownership", 3, isSystem: true),
+                    LookupItem.Create(catInterest.Id, "Rental", "Rental", 4, isSystem: true),
+                    LookupItem.Create(catInterest.Id, "LandSourcing", "Land Sourcing", 5, isSystem: true)
                 );
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                // Update existing core items to be system items if they aren't already
+                var systemCategoryNames = new[] { "SubscriberType", "CommunicationMethod", "Interest" };
+                var systemCategories = await _context.LookupCategories
+                    .IgnoreQueryFilters()
+                    .Where(c => systemCategoryNames.Contains(c.Name))
+                    .Include(c => c.Items)
+                    .ToListAsync();
+
+                foreach (var cat in systemCategories)
+                {
+                    cat.IsSystem = true;
+                    foreach (var item in cat.Items)
+                    {
+                        item.IsSystem = true;
+                    }
+                }
                 await _context.SaveChangesAsync();
             }
 

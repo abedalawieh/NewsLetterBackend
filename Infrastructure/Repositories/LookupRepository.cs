@@ -66,6 +66,14 @@ namespace NewsletterApp.Infrastructure.Repositories
             return category;
         }
 
+        public async Task<LookupCategory> GetCategoryByIdAsync(Guid id)
+        {
+            return await _context.LookupCategories
+                .IgnoreQueryFilters()
+                .Include(c => c.Items)
+                .FirstOrDefaultAsync(c => c.Id == id);
+        }
+
         public async Task UpdateCategoryAsync(LookupCategory category)
         {
             _context.Entry(category).State = EntityState.Modified;
@@ -81,7 +89,10 @@ namespace NewsletterApp.Infrastructure.Repositories
 
         public async Task<bool> DeleteCategoryAsync(Guid id)
         {
-            var category = await _context.LookupCategories.FindAsync(id);
+            var category = await _context.LookupCategories
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(c => c.Id == id);
+                
             if (category == null) return false;
 
             var itemCount = await GetItemCountByCategoryIdAsync(id);

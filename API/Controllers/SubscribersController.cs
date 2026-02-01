@@ -86,6 +86,15 @@ namespace NewsletterApp.API.Controllers
             }
             catch (InvalidOperationException ex)
             {
+                if (ex.Message.StartsWith("WELCOME_BACK:"))
+                {
+                    var name = ex.Message.Split(':')[1];
+                    return Ok(new { message = $"Welcome back, {name}! Your subscription has been reactivated.", status = "reactivated" });
+                }
+                if (ex.Message == "ALREADY_ACTIVE")
+                {
+                    return Conflict(new { message = "This email is already subscribed to our newsletter.", status = "active" });
+                }
                 return Conflict(new { message = ex.Message });
             }
             catch (ArgumentException ex)
@@ -201,9 +210,19 @@ namespace NewsletterApp.API.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var result = await _subscriberService.UnsubscribeAsync(dto.Email, dto.Reason, dto.Comment);
-            if (!result) return NotFound(new { message = "Email not found" });
-            return NoContent();
+            try 
+            {
+                await _subscriberService.UnsubscribeAsync(dto.Email, dto.Reason, dto.Comment);
+                return Ok(new { message = "You have been successfully unsubscribed." });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                if (ex.Message == "NO_ACCOUNT")
+                {
+                    return NotFound(new { message = "There is no account associated with this email address." });
+                }
+                return NotFound(new { message = ex.Message });
+            }
         }
     }
 }

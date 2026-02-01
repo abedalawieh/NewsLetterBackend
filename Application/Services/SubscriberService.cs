@@ -20,9 +20,27 @@ namespace NewsletterApp.Application.Services
 
         public async Task<SubscriberResponseDto> CreateSubscriberAsync(CreateSubscriberDto dto)
         {
-            if (await _repository.EmailExistsAsync(dto.Email))
+            var existing = await _repository.GetByEmailAsync(dto.Email);
+            if (existing != null)
             {
-                throw new InvalidOperationException($"A subscriber with email {dto.Email} already exists.");
+                if (!existing.IsActive)
+                {
+                    existing.Activate();
+                    existing.UpdateDetails(
+                        dto.FirstName,
+                        dto.LastName,
+                        dto.Type,
+                        dto.CommunicationMethods,
+                        dto.Interests
+                    );
+                    
+                    await _repository.UpdateAsync(existing);
+                    await _repository.AddHistoryAsync(SubscriptionHistory.Create(existing.Id, "Activate", "Welcome Back - Resubscribed"));
+                    
+                    throw new InvalidOperationException($"WELCOME_BACK:{existing.FirstName}");
+                }
+                
+                throw new InvalidOperationException("ALREADY_ACTIVE");
             }
 
             var subscriber = Subscriber.Create(
@@ -56,7 +74,13 @@ namespace NewsletterApp.Application.Services
             var subscriber = await _repository.GetByIdAsync(id);
             if (subscriber == null) throw new KeyNotFoundException($"Subscriber with ID {id} not found.");
 
-            // Update mapping logic here if needed
+            subscriber.UpdateDetails(
+                dto.FirstName,
+                dto.LastName,
+                dto.Type,
+                dto.CommunicationMethods,
+                dto.Interests
+            );
             
             await _repository.UpdateAsync(subscriber);
             return MapToDto(subscriber);
@@ -94,11 +118,19 @@ namespace NewsletterApp.Application.Services
         public async Task<bool> UnsubscribeAsync(string email, string reason, string comment = null)
         {
             var subscriber = await _repository.GetByEmailAsync(email);
-            if (subscriber == null) return false;
+            if (subscriber == null) 
+            {
+                throw new KeyNotFoundException("NO_ACCOUNT");
+            }
+
+            if (!subscriber.IsActive)
+            {
+                 return true; // Already unsubscribed
+            }
 
             subscriber.Deactivate();
             await _repository.UpdateAsync(subscriber);
-            await _repository.AddHistoryAsync(SubscriptionHistory.Create(subscriber.Id, "Unsubscribe", reason ?? "", comment));
+            await _repository.AddHistoryAsync(SubscriptionHistory.Create(subscriber.Id, "Unsubscribe", reason ?? "User Request", comment));
             return true;
         }
 
