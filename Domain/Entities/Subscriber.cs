@@ -70,6 +70,8 @@ namespace NewsletterApp.Domain.Entities
         public Guid SubscriberId { get; set; }
         public string Action { get; set; } // Subscribe, Unsubscribe
         public string Reason { get; set; }
+        /// <summary>Optional free-text comment (e.g. for unsubscribe feedback).</summary>
+        public string Comment { get; set; }
         public DateTime Timestamp { get; set; }
 
         public DateTime CreatedAt { get; set; }
@@ -77,14 +79,15 @@ namespace NewsletterApp.Domain.Entities
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
 
-        public static SubscriptionHistory Create(Guid subscriberId, string action, string reason = "")
+        public static SubscriptionHistory Create(Guid subscriberId, string action, string reason = "", string comment = null)
         {
             return new SubscriptionHistory
             {
                 Id = Guid.NewGuid(),
                 SubscriberId = subscriberId,
                 Action = action,
-                Reason = reason,
+                Reason = reason ?? "",
+                Comment = comment,
                 Timestamp = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow
             };

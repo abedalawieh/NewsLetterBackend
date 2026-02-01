@@ -1,6 +1,7 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using NewsletterApp.Application.DTOs;
+using NewsletterApp.Application.Interfaces;
 using NewsletterApp.Domain.Entities;
 using NewsletterApp.Infrastructure.Data;
 using System.Collections.Generic;
@@ -12,10 +13,12 @@ namespace NewsletterApp.API.Areas.Admin.Pages
     public class DashboardModel : PageModel
     {
         private readonly NewsletterDbContext _context;
+        private readonly IUnsubscribeAnalyticsService _unsubscribeAnalytics;
 
-        public DashboardModel(NewsletterDbContext context)
+        public DashboardModel(NewsletterDbContext context, IUnsubscribeAnalyticsService unsubscribeAnalytics)
         {
             _context = context;
+            _unsubscribeAnalytics = unsubscribeAnalytics;
         }
 
         #region stats
@@ -24,16 +27,12 @@ namespace NewsletterApp.API.Areas.Admin.Pages
         public int ActiveSubscribers { get; set; }
         public int NewslettersSent { get; set; }
         
-        public List<UnsubscribeStat> UnsubscribeReasons { get; set; }
+        public IReadOnlyList<UnsubscribeStatDto> UnsubscribeReasons { get; set; }
         public List<SubscriptionHistory> RecentActivity { get; set; }
+        /// <summary>Recent unsubscribe history (who, reason, comment) for home page analytics.</summary>
+        public IReadOnlyList<UnsubscribeHistoryDto> RecentUnsubscribes { get; set; }
 
         #endregion
-
-        public class UnsubscribeStat
-        {
-            public string Reason { get; set; }
-            public int Count { get; set; }
-        }
 
         public async Task OnGetAsync()
         {
@@ -44,17 +43,15 @@ namespace NewsletterApp.API.Areas.Admin.Pages
             
             NewslettersSent = await _context.Newsletters.CountAsync(n => n.SentAt != null);
 
-            UnsubscribeReasons = await _context.SubscriptionHistories
-                .Where(h => h.Action == "Unsubscribe")
-                .GroupBy(h => h.Reason)
-                .Select(g => new UnsubscribeStat { Reason = g.Key, Count = g.Count() })
-                .OrderByDescending(x => x.Count)
-                .ToListAsync();
+            UnsubscribeReasons = await _unsubscribeAnalytics.GetUnsubscribeStatsAsync();
 
             RecentActivity = await _context.SubscriptionHistories
                 .OrderByDescending(h => h.Timestamp)
                 .Take(10)
                 .ToListAsync();
+
+            var paged = await _unsubscribeAnalytics.GetUnsubscribeHistoryPagedAsync(1, 15);
+            RecentUnsubscribes = paged.Items?.ToList() ?? new List<UnsubscribeHistoryDto>();
         }
     }
 }

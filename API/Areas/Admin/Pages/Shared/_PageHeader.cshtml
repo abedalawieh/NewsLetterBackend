@@ -1,0 +1,35 @@
+@* Reusable page header: title, optional subtitle and icon. Use with PageHeaderViewModel. *@
+@model PageHeaderViewModel
+@if (Model != null)
+{
+    <div class="d-flex align-items-center mb-4">
+        <div>
+            @if (!string.IsNullOrEmpty(Model.Icon))
+            {
+                <i class="@Model.Icon me-2" style="color: var(--accent, #0ea5e9);"></i>
+            }
+            <h1 class="h3 fw-bold mb-1">@Model.Title</h1>
+            @if (!string.IsNullOrEmpty(Model.Subtitle))
+            {
+                <p class="text-secondary small mb-0">@Model.Subtitle</p>
+            }
+        </div>
+        @if (Model.Actions?.Any() == true)
+        {
+            <div class="ms-auto d-flex gap-2">
+                @foreach (var action in Model.Actions)
+                {
+                    var btnClass = action.IsOutline ? $"btn btn-outline-{action.Style}" : $"btn btn-{action.Style}";
+                    if (!string.IsNullOrEmpty(action.CssClass)) { btnClass += " " + action.CssClass; }
+                    <a href="@action.Url" class="@btnClass">
+                        @if (!string.IsNullOrEmpty(action.Icon))
+                        {
+                            <i class="@action.Icon me-2"></i>
+                        }
+                        @action.Label
+                    </a>
+                }
+            </div>
+        }
+    </div>
+}

@@ -91,14 +91,14 @@ namespace NewsletterApp.Application.Services
             return true;
         }
 
-        public async Task<bool> UnsubscribeAsync(string email, string reason)
+        public async Task<bool> UnsubscribeAsync(string email, string reason, string comment = null)
         {
             var subscriber = await _repository.GetByEmailAsync(email);
             if (subscriber == null) return false;
 
             subscriber.Deactivate();
             await _repository.UpdateAsync(subscriber);
-            await _repository.AddHistoryAsync(SubscriptionHistory.Create(subscriber.Id, "Unsubscribe", reason));
+            await _repository.AddHistoryAsync(SubscriptionHistory.Create(subscriber.Id, "Unsubscribe", reason ?? "", comment));
             return true;
         }
 

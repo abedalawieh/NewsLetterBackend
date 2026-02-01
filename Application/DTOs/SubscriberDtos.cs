@@ -71,7 +71,26 @@ namespace NewsletterApp.Application.DTOs
         [Required]
         [EmailAddress]
         public string Email { get; set; }
+        [Required(ErrorMessage = "Please tell us why you're unsubscribing.")]
         public string Reason { get; set; }
+        [StringLength(500)]
+        public string Comment { get; set; }
+    }
+
+    public class UnsubscribeHistoryDto
+    {
+        public Guid Id { get; set; }
+        public string Email { get; set; }
+        public string Reason { get; set; }
+        public string Comment { get; set; }
+        public DateTime Timestamp { get; set; }
+    }
+
+    /// <summary>For admin analytics: reason and count of unsubscribes.</summary>
+    public class UnsubscribeStatDto
+    {
+        public string Reason { get; set; }
+        public int Count { get; set; }
     }
 }
 

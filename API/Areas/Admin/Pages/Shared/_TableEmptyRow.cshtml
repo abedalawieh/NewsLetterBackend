@@ -1,0 +1,10 @@
+@* Reusable empty state row for tables. ColSpan = number of columns, Message = text to show. *@
+@{
+    int colSpan = (int)(ViewData["ColSpan"] ?? 1);
+    string message = (string)(ViewData["Message"] ?? "No records found.");
+}
+<tr>
+    <td colspan="@colSpan" class="text-center text-secondary py-4">
+        @message
+    </td>
+</tr>

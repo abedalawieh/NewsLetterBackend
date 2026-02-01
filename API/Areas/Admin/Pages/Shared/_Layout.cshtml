@@ -56,6 +56,9 @@
                 <a class="nav-link @(ViewContext.RouteData.Values["page"].ToString().Contains("/Subscribers") ? "active" : "")" asp-area="Admin" asp-page="/Subscribers/Index">
                     <i class="fas fa-users"></i> Subscribers
                 </a>
+                <a class="nav-link @(ViewContext.RouteData.Values["page"].ToString().Contains("/UnsubscribeAnalytics") ? "active" : "")" asp-area="Admin" asp-page="/UnsubscribeAnalytics/Index">
+                    <i class="fas fa-chart-line"></i> Unsubscribe Analytics
+                </a>
                 <a class="nav-link @(ViewContext.RouteData.Values["page"].ToString().Contains("/Metadata") ? "active" : "")" asp-area="Admin" asp-page="/Metadata/Index">
                     <i class="fas fa-tags"></i> Metadata
                 </a>

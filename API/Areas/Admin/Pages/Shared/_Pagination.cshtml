@@ -1,0 +1,82 @@
+@* Reusable pagination: uses current page from ViewContext; pass PaginationViewModel. For use in Admin area. *@
+@model PaginationViewModel
+@{
+    var pagePath = ViewContext.RouteData.Values["page"]?.ToString() ?? "";
+    var totalPages = Model?.TotalPages ?? 0;
+}
+@if (!string.IsNullOrEmpty(pagePath) && !pagePath.StartsWith("/"))
+{
+    pagePath = "/" + pagePath;
+}
+@{
+    var currentPage = Model?.CurrentPage ?? 1;
+    var pageSize = Model?.SelectedPageSize ?? Model?.PageSize ?? 10;
+}
+@if (Model != null && totalPages > 1)
+{
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center flex-wrap">
+            <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
+                @if (currentPage > 1)
+                {
+                    <a class="page-link" asp-area="Admin" asp-page="@pagePath" asp-route-pageNumber="1" asp-route-pageSize="@pageSize">First</a>
+                }
+                else
+                {
+                    <span class="page-link">First</span>
+                }
+            </li>
+            <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
+                @if (currentPage > 1)
+                {
+                    <a class="page-link" asp-area="Admin" asp-page="@pagePath" asp-route-pageNumber="@(currentPage - 1)" asp-route-pageSize="@pageSize">Previous</a>
+                }
+                else
+                {
+                    <span class="page-link">Previous</span>
+                }
+            </li>
+            @{
+                var startPage = Math.Max(1, currentPage - 2);
+                var endPage = Math.Min(totalPages, currentPage + 2);
+                for (var i = startPage; i <= endPage; i++)
+                {
+                    var pageNum = i;
+                    if (pageNum == currentPage)
+                    {
+                        <li class="page-item active">
+                            <span class="page-link">@pageNum</span>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item">
+                            <a class="page-link" asp-area="Admin" asp-page="@pagePath" asp-route-pageNumber="@pageNum" asp-route-pageSize="@pageSize">@pageNum</a>
+                        </li>
+                    }
+                }
+            }
+            <li class="page-item @(currentPage >= totalPages ? "disabled" : "")">
+                @if (currentPage < totalPages)
+                {
+                    <a class="page-link" asp-area="Admin" asp-page="@pagePath" asp-route-pageNumber="@(currentPage + 1)" asp-route-pageSize="@pageSize">Next</a>
+                }
+                else
+                {
+                    <span class="page-link">Next</span>
+                }
+            </li>
+            <li class="page-item @(currentPage >= totalPages ? "disabled" : "")">
+                @if (currentPage < totalPages)
+                {
+                    <a class="page-link" asp-area="Admin" asp-page="@pagePath" asp-route-pageNumber="@totalPages" asp-route-pageSize="@pageSize">Last</a>
+                }
+                else
+                {
+                    <span class="page-link">Last</span>
+                }
+            </li>
+        </ul>
+        <p class="text-center text-secondary small mt-2 mb-0">Page @currentPage of @totalPages</p>
+    </nav>
+}

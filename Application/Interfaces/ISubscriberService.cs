@@ -14,7 +14,7 @@ namespace NewsletterApp.Application.Interfaces
         Task<bool> DeleteSubscriberAsync(Guid id);
         Task<bool> DeactivateSubscriberAsync(Guid id);
         Task<bool> ActivateSubscriberAsync(Guid id);
-        Task<bool> UnsubscribeAsync(string email, string reason);
+        Task<bool> UnsubscribeAsync(string email, string reason, string comment = null);
         Task<PagedResult<SubscriberResponseDto>> GetPagedSubscribersAsync(SubscriberFilterParams filter);
     }
 }

@@ -10,6 +10,7 @@ using NewsletterApp.Domain.Entities;
 using NewsletterApp.Domain.Interfaces;
 using NewsletterApp.Infrastructure.Data;
 using NewsletterApp.Infrastructure.Repositories;
+using NewsletterApp.Infrastructure.Services;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -114,6 +115,8 @@ builder.Services.AddScoped<ILookupService, LookupService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<INewsletterService, NewsletterService>();
+builder.Services.AddScoped<IDeletedItemsService, DeletedItemsService>();
+builder.Services.AddScoped<IUnsubscribeAnalyticsService, UnsubscribeAnalyticsService>();
 builder.Services.AddScoped<IDatabaseSeeder, DatabaseSeeder>();
 
 #endregion

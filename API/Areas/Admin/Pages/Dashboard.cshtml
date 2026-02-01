@@ -100,3 +100,48 @@
         </div>
     </div>
 </div>
+
+<div class="row g-4 mt-2">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header border-bottom border-opacity-10 bg-transparent p-4 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0">Recent Unsubscribes (who & why)</h5>
+                <a asp-area="Admin" asp-page="/UnsubscribeAnalytics/Index" class="btn btn-sm btn-outline-primary">View all</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle mb-0">
+                        <thead class="table-active">
+                            <tr>
+                                <th>Email</th>
+                                <th>Reason</th>
+                                <th>Comment</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.RecentUnsubscribes?.Any() == true)
+                            {
+                                @foreach (var item in Model.RecentUnsubscribes)
+                                {
+                                    <tr>
+                                        <td class="fw-bold">@item.Email</td>
+                                        <td>@item.Reason</td>
+                                        <td class="text-secondary small">@(string.IsNullOrEmpty(item.Comment) ? "—" : item.Comment)</td>
+                                        <td class="text-nowrap">@item.Timestamp.ToString("MMM dd, yyyy HH:mm")</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center text-secondary py-4">No unsubscribe history yet.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
