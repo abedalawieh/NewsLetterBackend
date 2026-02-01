@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using NewsletterApp.Domain.Entities;
-using NewsletterApp.Domain.Interfaces;
+using NewsletterApp.Application.Interfaces;
 using NewsletterApp.Infrastructure.Data;
 using System;
 using System.Collections.Generic;

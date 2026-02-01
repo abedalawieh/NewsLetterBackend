@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using NewsletterApp.Domain.Interfaces;
+using NewsletterApp.Domain.Entities;
+using NewsletterApp.Application.Interfaces;
 using NewsletterApp.Infrastructure.Data;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ namespace NewsletterApp.Infrastructure.Repositories
         }
 
         public virtual IQueryable<T> Entities => _context.Set<T>();
+        public virtual IQueryable<T> AllEntities => _context.Set<T>().IgnoreQueryFilters();
 
         public virtual async Task<T> GetByIdAsync(Guid id)
         {

@@ -73,7 +73,8 @@ namespace NewsletterApp.Application.DTOs
         public string Email { get; set; }
         [Required(ErrorMessage = "Please tell us why you're unsubscribing.")]
         public string Reason { get; set; }
-        [StringLength(500)]
+        [Required(ErrorMessage = "Please provide a comment to help us improve.")]
+        [StringLength(500, MinimumLength = 1)]
         public string Comment { get; set; }
     }
 

@@ -193,9 +193,14 @@ namespace NewsletterApp.API.Controllers
         /// <returns>No content</returns>
         [HttpPost("unsubscribe")]
         [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         public async Task<IActionResult> Unsubscribe([FromBody] UnsubscribeDto dto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var result = await _subscriberService.UnsubscribeAsync(dto.Email, dto.Reason, dto.Comment);
             if (!result) return NotFound(new { message = "Email not found" });
             return NoContent();

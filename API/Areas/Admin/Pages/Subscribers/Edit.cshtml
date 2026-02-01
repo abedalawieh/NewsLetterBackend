@@ -1,0 +1,97 @@
+@page "{id:guid}"
+@model NewsletterApp.API.Areas.Admin.Pages.Subscribers.EditModel
+@{
+    ViewData["Title"] = "Subscriber Details";
+}
+
+<div class="d-flex align-items-center mb-4">
+    <a asp-page="Index" class="btn btn-outline-secondary rounded-circle px-3 py-2 me-4" title="Back to list">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    <div>
+        <h1 class="h3 fw-bold mb-1">Subscriber Details</h1>
+        <p class="text-secondary small mb-0">View interests, communication preferences, and more</p>
+    </div>
+</div>
+
+@if (Model.Subscriber != null)
+{
+    <div class="card">
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <h6 class="text-uppercase text-secondary small mb-2">Contact</h6>
+                    <p class="mb-1"><strong>Email:</strong> <span class="text-light">@Model.Subscriber.Email</span></p>
+                    <p class="mb-1"><strong>Name:</strong> <span class="text-light">@Model.Subscriber.FirstName @Model.Subscriber.LastName</span></p>
+                    <p class="mb-0"><strong>Status:</strong>
+                        @if (Model.Subscriber.IsActive)
+                        {
+                            <span class="badge bg-success">Active</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Inactive</span>
+                        }
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="text-uppercase text-secondary small mb-2">Profile</h6>
+                    <p class="mb-1"><strong>Type:</strong> <span class="text-light">@Model.Subscriber.Type</span></p>
+                    <p class="mb-1"><strong>Joined:</strong> <span class="text-light">@Model.Subscriber.CreatedAt.ToString("MMM dd, yyyy")</span></p>
+                    @if (Model.Subscriber.UpdatedAt.HasValue)
+                    {
+                        <p class="mb-0"><strong>Last updated:</strong> <span class="text-light">@Model.Subscriber.UpdatedAt.Value.ToString("MMM dd, yyyy")</span></p>
+                    }
+                </div>
+                <div class="col-12">
+                    <hr class="border-secondary" />
+                </div>
+                <div class="col-md-6">
+                    <h6 class="text-uppercase text-secondary small mb-2">Interests</h6>
+                    @if (Model.Subscriber.Interests?.Any() == true)
+                    {
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach (var interest in Model.Subscriber.Interests)
+                            {
+                                <span class="badge bg-primary bg-opacity-25 text-primary px-3 py-2">@interest</span>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-secondary small mb-0">No interests specified</p>
+                    }
+                </div>
+                <div class="col-md-6">
+                    <h6 class="text-uppercase text-secondary small mb-2">Communication Methods</h6>
+                    @if (Model.Subscriber.CommunicationMethods?.Any() == true)
+                    {
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach (var method in Model.Subscriber.CommunicationMethods)
+                            {
+                                <span class="badge bg-info bg-opacity-25 text-info px-3 py-2">@method</span>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-secondary small mb-0">No communication methods specified</p>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="card-footer border-top border-secondary d-flex gap-2">
+            <a asp-page="Index" class="btn btn-outline-secondary">Back to List</a>
+            <form method="post" asp-page-handler="Toggle" asp-route-id="@Model.Subscriber.Id" class="d-inline">
+                <button type="submit" class="btn @(Model.Subscriber.IsActive ? "btn-outline-warning" : "btn-outline-success")">
+                    <i class="fas fa-power-off me-1"></i>
+                    @(Model.Subscriber.IsActive ? "Disable" : "Enable")
+                </button>
+            </form>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-warning">Subscriber not found.</div>
+}

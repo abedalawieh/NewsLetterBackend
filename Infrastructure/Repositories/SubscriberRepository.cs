@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NewsletterApp.Domain.Entities;
-using NewsletterApp.Domain.Interfaces;
+using NewsletterApp.Application.Interfaces;
 using NewsletterApp.Infrastructure.Data;
 
 namespace NewsletterApp.Infrastructure.Repositories
@@ -17,7 +17,9 @@ namespace NewsletterApp.Infrastructure.Repositories
 
         public async Task<Subscriber> GetByEmailAsync(string email)
         {
-            return await Entities.FirstOrDefaultAsync(s => s.Email == email);
+            if (string.IsNullOrEmpty(email)) return null;
+            var normalizedEmail = email.Trim().ToLower();
+            return await Entities.FirstOrDefaultAsync(s => s.Email.ToLower() == normalizedEmail);
         }
 
         public async Task<IEnumerable<Subscriber>> GetActiveSubscribersAsync()

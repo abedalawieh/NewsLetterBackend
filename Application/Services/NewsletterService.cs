@@ -71,6 +71,8 @@ namespace NewsletterApp.Application.Services
 
             var filteredSubscribers = subscribers
                 .Where(s => s.Interests.Any(i => targetInterests.Contains(i, StringComparer.OrdinalIgnoreCase)))
+                .Where(s => s.CommunicationMethods != null && s.CommunicationMethods.Any(cm => 
+                    "Email".Equals(cm, StringComparison.OrdinalIgnoreCase)))
                 .ToList();
 
             // Apply subscriber type filter if specified (from parameter or newsletter setting)

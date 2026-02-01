@@ -62,6 +62,12 @@ namespace NewsletterApp.Domain.Entities
         {
             IsActive = true;
         }
+
+        public void UpdateType(string newType)
+        {
+            if (string.IsNullOrWhiteSpace(newType)) throw new ArgumentException("Type cannot be empty");
+            Type = newType;
+        }
     }
 
     public class SubscriptionHistory : IAuditEntity

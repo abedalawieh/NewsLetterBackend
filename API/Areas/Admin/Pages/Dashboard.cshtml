@@ -54,7 +54,7 @@
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table mb-0">
+                    <table class="table table-dark mb-0">
                         <tbody>
                             @foreach (var activity in Model.RecentActivity)
                             {
@@ -68,7 +68,7 @@
                                         <div class="text-white small">Subscriber: @activity.SubscriberId</div>
                                         <div class="text-secondary smaller">@activity.Reason</div>
                                     </td>
-                                    <td class="text-end pe-4 text-secondary small">
+                                    <td class="text-end pe-4 text-light small">
                                         @activity.Timestamp.ToString("MMM dd, HH:mm")
                                     </td>
                                 </tr>

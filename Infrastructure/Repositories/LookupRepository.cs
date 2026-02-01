@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NewsletterApp.Domain.Entities;
-using NewsletterApp.Domain.Interfaces;
+using NewsletterApp.Application.Interfaces;
 using NewsletterApp.Infrastructure.Data;
 
 namespace NewsletterApp.Infrastructure.Repositories
@@ -14,6 +14,9 @@ namespace NewsletterApp.Infrastructure.Repositories
         public LookupRepository(NewsletterDbContext context) : base(context)
         {
         }
+
+        public IQueryable<LookupCategory> Categories => _context.LookupCategories;
+        public IQueryable<LookupCategory> AllCategories => _context.LookupCategories.IgnoreQueryFilters();
 
         public async Task<IEnumerable<LookupCategory>> GetAllCategoriesAsync()
         {
@@ -61,6 +64,12 @@ namespace NewsletterApp.Infrastructure.Repositories
             _context.LookupCategories.Add(category);
             await _context.SaveChangesAsync();
             return category;
+        }
+
+        public async Task UpdateCategoryAsync(LookupCategory category)
+        {
+            _context.Entry(category).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
         }
 
         public async Task<int> GetItemCountByCategoryIdAsync(Guid categoryId)

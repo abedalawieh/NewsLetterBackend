@@ -4,11 +4,12 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace NewsletterApp.Domain.Interfaces
+namespace NewsletterApp.Application.Interfaces
 {
     public interface IAsyncRepository<T> where T : class
     {
         IQueryable<T> Entities { get; }
+        IQueryable<T> AllEntities { get; }
         
         Task<T> GetByIdAsync(Guid id);
         Task<IReadOnlyList<T>> GetAllAsync();
