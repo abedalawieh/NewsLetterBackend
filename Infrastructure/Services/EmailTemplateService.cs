@@ -31,12 +31,6 @@ namespace NewsletterApp.Infrastructure.Services
             { "LandSourcing", "LandSourcingNewsletter" }
         };
 
-        // Template mapping for subscriber types
-        private static readonly Dictionary<string, string> SubscriberTypeTemplateMap = new(StringComparer.OrdinalIgnoreCase)
-        {
-            { "HomeBuilder", "HomeBuilderNewsletter" },
-            { "HomeBuyer", "HomeBuyerNewsletter" }
-        };
 
         public EmailTemplateService(IConfiguration configuration, ILogger<EmailTemplateService> logger)
         {
@@ -142,21 +136,6 @@ namespace NewsletterApp.Infrastructure.Services
             return new string(chars);
         }
 
-        public string GetTemplateNameForSubscriberType(string subscriberType)
-        {
-            if (string.IsNullOrWhiteSpace(subscriberType))
-                return "GenericNewsletter";
-
-            var cleanType = subscriberType.Trim();
-
-            if (SubscriberTypeTemplateMap.TryGetValue(cleanType, out var templateName))
-            {
-                return templateName;
-            }
-
-            _logger.LogInformation("No specific template for subscriber type '{Type}', using generic", subscriberType);
-            return "GenericNewsletter";
-        }
 
         public bool TemplateExists(string templateName)
         {
@@ -167,7 +146,7 @@ namespace NewsletterApp.Infrastructure.Services
             return File.Exists(templatePath);
         }
 
-        public string GetBestTemplateName(string explicitTemplate, string subscriberType, IEnumerable<string> interests)
+        public string GetBestTemplateName(string explicitTemplate, IEnumerable<string> interests)
         {
             // Priority 1: explicit template
             if (!string.IsNullOrWhiteSpace(explicitTemplate) && TemplateExists(explicitTemplate))
@@ -175,17 +154,7 @@ namespace NewsletterApp.Infrastructure.Services
                 return explicitTemplate;
             }
 
-            // Priority 2: subscriber type mapping
-            if (!string.IsNullOrWhiteSpace(subscriberType))
-            {
-                var typeTemplate = GetTemplateNameForSubscriberType(subscriberType);
-                if (TemplateExists(typeTemplate))
-                {
-                    return typeTemplate;
-                }
-            }
-
-            // Priority 3: try interests (prefer the first matching mapped interest)
+            // Priority 2: try interests (prefer the first matching mapped interest)
             if (interests != null)
             {
                 foreach (var interest in interests)

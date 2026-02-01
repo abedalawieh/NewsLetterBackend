@@ -58,8 +58,7 @@ namespace NewsletterApp.API.Areas.Admin.Pages.Newsletters
             var newsletter = await _newsletterService.CreateDraftAsync(
                 Input.Title,
                 Input.Content,
-                interests,
-                null
+                interests
             );
 
             // Template is auto-selected per recipient; no explicit template stored here.

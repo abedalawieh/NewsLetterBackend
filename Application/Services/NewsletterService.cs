@@ -38,21 +38,15 @@ namespace NewsletterApp.Application.Services
 
         public async Task<Newsletter> CreateDraftAsync(string title, string content, List<string> interests)
         {
-            return await CreateDraftAsync(title, content, interests, null);
-        }
-
-        public async Task<Newsletter> CreateDraftAsync(string title, string content, List<string> interests, string targetSubscriberType)
-        {
             var newsletter = Newsletter.Create(
                 title, 
                 content, 
-                string.Join(",", interests),
-                targetSubscriberType
+                string.Join(",", interests)
             );
             return await _newsletterRepository.AddAsync(newsletter);
         }
 
-        public async Task SendNewsletterAsync(Guid newsletterId, string templateName = null, string targetSubscriberType = null)
+        public async Task SendNewsletterAsync(Guid newsletterId, string templateName = null)
         {
             var newsletter = await _newsletterRepository.GetByIdAsync(newsletterId);
             if (newsletter == null || !newsletter.IsDraft)
@@ -75,21 +69,11 @@ namespace NewsletterApp.Application.Services
                     "Email".Equals(cm, StringComparison.OrdinalIgnoreCase)))
                 .ToList();
 
-            // Apply subscriber type filter if specified (from parameter or newsletter setting)
-            var effectiveSubscriberType = targetSubscriberType ?? newsletter.TargetSubscriberType;
-            if (!string.IsNullOrWhiteSpace(effectiveSubscriberType))
-            {
-                filteredSubscribers = filteredSubscribers
-                    .Where(s => s.Type.Equals(effectiveSubscriberType, StringComparison.OrdinalIgnoreCase))
-                    .ToList();
-            }
-
             _logger.LogInformation(
-                "Sending newsletter {Id} to {Count} subscribers (interests: {Interests}, type: {Type})",
+                "Sending newsletter {Id} to {Count} subscribers (interests: {Interests})",
                 newsletterId, 
                 filteredSubscribers.Count, 
-                newsletter.TargetInterests,
-                effectiveSubscriberType ?? "All");
+                newsletter.TargetInterests);
 
             // Use newsletter-level template as an explicit hint, but choose template per recipient
             var explicitTemplateHint = !string.IsNullOrWhiteSpace(templateName) ? templateName : newsletter.TemplateName;
@@ -105,7 +89,6 @@ namespace NewsletterApp.Application.Services
                 {
                     var perRecipientTemplate = _templateService.GetBestTemplateName(
                         explicitTemplateHint,
-                        sub.Type,
                         sub.Interests);
 
                     await _emailService.SendNewsletterWithTemplateAsync(
@@ -198,7 +181,6 @@ namespace NewsletterApp.Application.Services
 
             var perRecipientTemplate = _templateService.GetBestTemplateName(
                 explicitTemplateHint,
-                subscriber.Type,
                 subscriber.Interests);
 
             var unsubscribeLink = $"http://localhost:5173/unsubscribe?email={Uri.EscapeDataString(subscriber.Email)}";
@@ -239,17 +221,7 @@ namespace NewsletterApp.Application.Services
                 return newsletter.TemplateName;
             }
 
-            // Priority 3: Template based on subscriber type
-            if (!string.IsNullOrWhiteSpace(newsletter.TargetSubscriberType))
-            {
-                var typeTemplate = _templateService.GetTemplateNameForSubscriberType(newsletter.TargetSubscriberType);
-                if (_templateService.TemplateExists(typeTemplate))
-                {
-                    return typeTemplate;
-                }
-            }
-
-            // Priority 4: Template based on single interest
+            // Priority 3: Template based on single interest
             if (interests.Count == 1)
             {
                 var interestTemplate = _templateService.GetTemplateNameForInterest(interests[0]);
@@ -259,7 +231,7 @@ namespace NewsletterApp.Application.Services
                 }
             }
 
-            // Priority 5: Fall back to generic template for multiple interests
+            // Priority 4: Fall back to generic template for multiple interests
             return "GenericNewsletter";
         }
     }

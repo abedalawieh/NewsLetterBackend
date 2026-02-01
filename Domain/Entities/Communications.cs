@@ -11,10 +11,6 @@ namespace NewsletterApp.Domain.Entities
         public string Content { get; set; }
         public string TargetInterests { get; set; } // Comma separated or JSON
         /// <summary>
-        /// Target subscriber type filter (HomeBuilder/HomeBuyer or null for all)
-        /// </summary>
-        public string TargetSubscriberType { get; set; } = string.Empty;
-        /// <summary>
         /// Specific template to use (null for auto-selection based on interests)
         /// </summary>
         public string TemplateName { get; set; } = string.Empty;
@@ -28,7 +24,7 @@ namespace NewsletterApp.Domain.Entities
         public DateTime? UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
 
-        public static Newsletter Create(string title, string content, string targetInterests, string targetSubscriberType = null, string templateName = null)
+        public static Newsletter Create(string title, string content, string targetInterests, string templateName = null)
         {
             return new Newsletter
             {
@@ -36,7 +32,6 @@ namespace NewsletterApp.Domain.Entities
                 Title = title,
                 Content = content,
                 TargetInterests = targetInterests,
-                TargetSubscriberType = targetSubscriberType ?? string.Empty,
                 TemplateName = templateName ?? string.Empty,
                 IsDraft = true,
                 CreatedAt = DateTime.UtcNow

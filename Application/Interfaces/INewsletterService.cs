@@ -17,17 +17,11 @@ namespace NewsletterApp.Application.Interfaces
         Task<Newsletter> CreateDraftAsync(string title, string content, List<string> interests);
 
         /// <summary>
-        /// Creates a newsletter draft with subscriber type targeting
-        /// </summary>
-        Task<Newsletter> CreateDraftAsync(string title, string content, List<string> interests, string targetSubscriberType);
-
-        /// <summary>
         /// Sends a newsletter to subscribers matching the target criteria
         /// </summary>
         /// <param name="newsletterId">The newsletter ID to send</param>
         /// <param name="templateName">Optional specific template to use (null for auto-selection)</param>
-        /// <param name="targetSubscriberType">Optional filter by subscriber type (HomeBuilder/HomeBuyer)</param>
-        Task SendNewsletterAsync(Guid newsletterId, string templateName = null, string targetSubscriberType = null);
+        Task SendNewsletterAsync(Guid newsletterId, string templateName = null);
         Task<string> RenderTemplateForRecipientAsync(Guid newsletterId, Guid subscriberId, string templateName = null);
 
         /// <summary>

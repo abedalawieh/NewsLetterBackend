@@ -52,7 +52,6 @@ namespace NewsletterApp.API.Controllers
                     Id = n.Id,
                     Title = n.Title,
                     TargetInterests = n.TargetInterests,
-                    TargetSubscriberType = n.TargetSubscriberType,
                     TemplateName = n.TemplateName,
                     IsDraft = n.IsDraft,
                     SentAt = n.SentAt,
@@ -85,7 +84,6 @@ namespace NewsletterApp.API.Controllers
                 Title = newsletter.Title,
                 Content = newsletter.Content,
                 TargetInterests = newsletter.TargetInterests,
-                TargetSubscriberType = newsletter.TargetSubscriberType,
                 TemplateName = newsletter.TemplateName,
                 IsDraft = newsletter.IsDraft,
                 SentAt = newsletter.SentAt,
@@ -99,7 +97,6 @@ namespace NewsletterApp.API.Controllers
         public Guid Id { get; set; }
         public string Title { get; set; } = "";
         public string TargetInterests { get; set; } = "";
-        public string TargetSubscriberType { get; set; }
         public string TemplateName { get; set; }
         public bool IsDraft { get; set; }
         public DateTime? SentAt { get; set; }
@@ -112,7 +109,6 @@ namespace NewsletterApp.API.Controllers
         public string Title { get; set; } = "";
         public string Content { get; set; } = "";
         public string TargetInterests { get; set; } = "";
-        public string TargetSubscriberType { get; set; }
         public string TemplateName { get; set; }
         public bool IsDraft { get; set; }
         public DateTime? SentAt { get; set; }
