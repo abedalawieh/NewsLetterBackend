@@ -6,8 +6,8 @@
 }
 
 <style>
-    .code-badge { font-family: 'Fira Code', monospace; background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 0.3rem 0.6rem; border-radius: 6px; font-size: 0.85rem; }
-    .category-header { background: rgba(99, 102, 241, 0.05); border-left: 4px solid #6366f1; }
+    .code-badge { font-family: 'Fira Code', monospace; background: rgba(14, 165, 233, 0.15); color: #38bdf8; padding: 0.3rem 0.6rem; border-radius: 6px; font-size: 0.85rem; }
+    .category-header { background: rgba(14, 165, 233, 0.08); border-left: 4px solid var(--accent, #0ea5e9); }
 </style>
 
 <!-- Page Header -->
@@ -20,24 +20,6 @@
         <i class="fas fa-folder-plus me-2"></i> New Category
     </button>
 </div>
-
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="fas fa-check-circle me-2"></i>
-        @TempData["Success"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-}
-
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="fas fa-exclamation-circle me-2"></i>
-        @TempData["Error"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-}
 
 @if (Model.Categories != null)
 {
@@ -79,14 +61,14 @@
                         {
                             new DataTableCellViewModel 
                             { 
-                                Value = $"<span class='code-badge'>{item.Value}</span>",
-                                IsHtml = true,
-                                CssClass = "ps-4"
+                                Value = item.Value,
+                                IsHtml = false,
+                                CssClass = "ps-4 code-badge"
                             },
                             new DataTableCellViewModel
                             {
-                                Value = $"<span class='text-white fw-semibold'>{item.Label}</span>",
-                                IsHtml = true
+                                Value = item.Label,
+                                IsHtml = false
                             },
                             new DataTableCellViewModel
                             {

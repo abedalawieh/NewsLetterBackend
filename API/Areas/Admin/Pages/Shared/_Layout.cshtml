@@ -9,27 +9,35 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --sidebar-bg: #1e293b;
-            --main-bg: #0f172a;
-            --accent: #6366f1;
-            --card-bg: #1e293b;
+            --sidebar-bg: #0c1222;
+            --main-bg: #070d19;
+            --accent: #0ea5e9;
+            --accent-hover: #38bdf8;
+            --card-bg: #0f172a;
+            --card-border: rgba(148, 163, 184, 0.12);
             --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
         }
         body { font-family: 'Inter', sans-serif; background: var(--main-bg); color: var(--text); overflow-x: hidden; }
-        .sidebar { height: 100vh; background: var(--sidebar-bg); border-right: 1px solid rgba(255,255,255,0.05); position: fixed; width: 260px; z-index: 1000; }
+        .sidebar { height: 100vh; background: var(--sidebar-bg); border-right: 1px solid var(--card-border); position: fixed; width: 260px; z-index: 1000; }
         .main-content { margin-left: 260px; min-height: 100vh; padding: 2rem; }
-        .nav-link { color: #94a3b8; padding: 0.8rem 1.5rem; display: flex; align-items: center; border-radius: 0.5rem; margin: 0.2rem 1rem; transition: all 0.3s; }
-        .nav-link:hover { color: var(--text); background: rgba(255,255,255,0.05); }
-        .nav-link.active { background: var(--accent); color: white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .nav-link { color: var(--text-muted); padding: 0.8rem 1.5rem; display: flex; align-items: center; border-radius: 0.5rem; margin: 0.2rem 1rem; transition: all 0.2s; }
+        .nav-link:hover { color: var(--text); background: rgba(14, 165, 233, 0.08); }
+        .nav-link.active { background: var(--accent); color: white; }
         .nav-link i { width: 24px; margin-right: 12px; font-size: 1.1rem; }
-        .card { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.05); border-radius: 1rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2); }
         .stat-card { padding: 1.5rem; }
         .table { color: #cbd5e1; vertical-align: middle; background-color: transparent !important; }
-        .table thead th { background: rgba(15, 23, 42, 0.4); border-bottom: none; color: #94a3b8; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; padding: 1.2rem 1rem; }
-        .table tbody td { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 1.2rem 1rem; background-color: transparent !important; color: #cbd5e1 !important; }
-
+        .table thead th { background: rgba(15, 23, 42, 0.6); border-bottom: 1px solid var(--card-border); color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; padding: 1rem; }
+        .table tbody td { border-bottom: 1px solid var(--card-border); padding: 1rem; background-color: transparent !important; color: #cbd5e1 !important; }
         .btn-primary { background: var(--accent); border: none; padding: 0.6rem 1.2rem; border-radius: 0.5rem; font-weight: 500; }
-        .badge { padding: 0.5rem 0.8rem; border-radius: 0.4rem; font-weight: 500; }
+        .btn-primary:hover { background: var(--accent-hover); }
+        .badge { padding: 0.4rem 0.7rem; border-radius: 0.375rem; font-weight: 500; font-size: 0.75rem; }
+        .alert-success { --bs-alert-color: var(--success); --bs-alert-bg: rgba(34, 197, 94, 0.15); }
+        .alert-danger { --bs-alert-color: var(--danger); --bs-alert-bg: rgba(239, 68, 68, 0.15); }
     </style>
 </head>
 <body>
@@ -38,7 +46,7 @@
         <aside class="sidebar">
             <div class="p-4 mb-4">
                 <h4 class="text-white d-flex align-items-center fw-bold">
-                    <i class="fas fa-paper-plane me-3 text-indigo-400"></i>Newsletter
+                    <i class="fas fa-paper-plane me-3" style="color: var(--accent);"></i>Newsletter
                 </h4>
             </div>
             <nav class="nav flex-column mt-2">
@@ -72,6 +80,7 @@
     }
 
     <main class="@(User.Identity.IsAuthenticated ? "main-content" : "")">
+        <partial name="_Alerts" />
         @RenderBody()
     </main>
 
