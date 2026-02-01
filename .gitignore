@@ -16,3 +16,9 @@
 /Domain/bin/Debug/net8.0
 /API/bin/Debug/net8.0
 /API/obj
+/API/bin/Release/net8.0
+/API/Properties/PublishProfiles
+/Application/bin/Release/net8.0
+/Domain/bin/Release/net8.0
+/Infrastructure/bin/Release/net8.0
+/API
