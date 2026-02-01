@@ -1,0 +1,162 @@
+@page
+@model NewsletterApp.API.Areas.Admin.Pages.Newsletters.IndexModel
+@{
+    ViewData["Title"] = "Newsletter Campaigns";
+}
+
+<div class="d-flex align-items-center mb-5">
+    <h2 class="fw-bold mb-0">Newsletter Campaigns</h2>
+    <a asp-page="Create" class="btn btn-primary ms-auto">
+        <i class="fas fa-plus me-2"></i> New Campaign
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["InfoMessage"] != null)
+{
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        <i class="fas fa-info-circle me-2"></i> @TempData["InfoMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-dark table-hover align-middle mb-0">
+            <thead class="table-active">
+                <tr>
+                    <th>Subject</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Newsletters?.Any() == true)
+                {
+                    @foreach (var newsletter in Model.Newsletters)
+                    {
+                        <tr>
+                            <td class="fw-bold">@newsletter.Title</td>
+                            <td>
+                                @if (newsletter.IsDraft)
+                                {
+                                    <span class="badge bg-warning text-dark">Draft</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success">Sent</span>
+                                }
+                            </td>
+                            <td>@newsletter.CreatedAt.ToString("MMM dd, yyyy")</td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    @if (newsletter.IsDraft)
+                                    {
+                                        <button type="button" class="btn btn-outline-info" onclick="document.getElementById('sendForm-@newsletter.Id').submit();">
+                                            <i class="fas fa-paper-plane"></i> Send
+                                        </button>
+                                    }
+                                    <button type="button" class="btn btn-outline-danger" onclick="confirmDelete('@newsletter.Id', '@newsletter.Title')">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4" class="text-center text-secondary py-4">
+                            No newsletters found. <a asp-page="Create">Create one</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Pagination -->
+@if (Model.Pagination?.TotalPages > 1)
+{
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            @for (int i = 1; i <= Model.Pagination.TotalPages; i++)
+            {
+                if (i == Model.Pagination.CurrentPage)
+                {
+                    <li class="page-item active">
+                        <span class="page-link">@i</span>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-page="Index" asp-route-pageNumber="@i">@i</a>
+                    </li>
+                }
+            }
+        </ul>
+    </nav>
+}
+
+<!-- Send Forms -->
+@foreach (var newsletter in Model.Newsletters)
+{
+    @if (newsletter.IsDraft)
+    {
+        <form id="sendForm-@newsletter.Id" method="post" asp-page-handler="Send" asp-route-id="@newsletter.Id" style="display:none;"></form>
+    }
+}
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title">Delete Newsletter</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete <strong id="deleteNewsletterName"></strong>?</p>
+                <p class="text-warning small">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="post" asp-page-handler="Delete" style="display:inline;">
+                    <input type="hidden" name="id" id="deleteNewsletterIdInput" />
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let deleteModal;
+    document.addEventListener('DOMContentLoaded', function() {
+        deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    });
+
+    function confirmDelete(id, name) {
+        document.getElementById('deleteNewsletterName').textContent = name;
+        document.getElementById('deleteNewsletterIdInput').value = id;
+        deleteModal.show();
+    }
+</script>
+

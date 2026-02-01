@@ -1,0 +1,102 @@
+@page
+@model NewsletterApp.API.Areas.Admin.Pages.DashboardModel
+@{
+    ViewData["Title"] = "Operations Center";
+}
+
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="card stat-card border-0 shadow-sm">
+            <div class="d-flex align-items-center">
+                <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3 text-primary">
+                    <i class="fas fa-users fa-2x"></i>
+                </div>
+                <div>
+                    <h2 class="fw-bold mb-0">@Model.TotalSubscribers</h2>
+                    <p class="text-secondary small mb-0">Total Reach</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card border-0 shadow-sm">
+            <div class="d-flex align-items-center">
+                <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3 text-success">
+                    <i class="fas fa-user-check fa-2x"></i>
+                </div>
+                <div>
+                    <h2 class="fw-bold mb-0">@Model.ActiveSubscribers</h2>
+                    <p class="text-secondary small mb-0">Active Protocols</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card border-0 shadow-sm">
+            <div class="d-flex align-items-center">
+                <div class="rounded-circle bg-info bg-opacity-10 p-3 me-3 text-info">
+                    <i class="fas fa-paper-plane fa-2x"></i>
+                </div>
+                <div>
+                    <h2 class="fw-bold mb-0">@Model.NewslettersSent</h2>
+                    <p class="text-secondary small mb-0">Broadcasts Sent</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-7">
+        <div class="card h-100">
+            <div class="card-header border-bottom border-opacity-10 bg-transparent p-4">
+                <h5 class="fw-bold mb-0">Recent Engagement Logs</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <tbody>
+                            @foreach (var activity in Model.RecentActivity)
+                            {
+                                <tr>
+                                    <td class="ps-4">
+                                        <span class="badge @(activity.Action == "Subscribe" ? "bg-success" : "bg-danger") bg-opacity-10 @(activity.Action == "Subscribe" ? "text-success" : "text-danger") small">
+                                            @activity.Action.ToUpper()
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="text-white small">Subscriber: @activity.SubscriberId</div>
+                                        <div class="text-secondary smaller">@activity.Reason</div>
+                                    </td>
+                                    <td class="text-end pe-4 text-secondary small">
+                                        @activity.Timestamp.ToString("MMM dd, HH:mm")
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-5">
+        <div class="card h-100">
+            <div class="card-header border-bottom border-opacity-10 bg-transparent p-4">
+                <h5 class="fw-bold mb-0">Unsubscription Analytics</h5>
+            </div>
+            <div class="card-body">
+                @foreach(var stat in Model.UnsubscribeReasons) {
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-secondary small">@(string.IsNullOrEmpty(stat.Reason) ? "No Reason Provided" : stat.Reason)</span>
+                            <span class="text-white fw-bold small">@stat.Count</span>
+                        </div>
+                        <div class="progress bg-dark" style="height: 6px;">
+                            <div class="progress-bar bg-danger" role="progressbar" style="width: @(Model.TotalSubscribers > 0 ? (stat.Count * 100 / Model.TotalSubscribers) : 0)%"></div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

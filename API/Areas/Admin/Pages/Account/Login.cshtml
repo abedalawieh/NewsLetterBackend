@@ -1,0 +1,47 @@
+@page
+@model NewsletterApp.API.Areas.Admin.Pages.Account.LoginModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Admin Login";
+}
+
+<div class="d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+    <div class="col-md-4">
+        <div class="card p-5">
+            <div class="text-center mb-5">
+                <i class="fas fa-lock fa-3x text-indigo-400 mb-3"></i>
+                <h3 class="fw-bold">Security Portal</h3>
+                <p class="text-secondary">Administrative Access Only</p>
+            </div>
+            
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger small mb-4"></div>
+                
+                <div class="mb-4">
+                    <label asp-for="Username" class="form-label text-secondary small text-uppercase fw-bold">Identification</label>
+                    <input asp-for="Username" class="form-control bg-dark text-white border-0 p-3 shadow-sm" placeholder="Username" required />
+                    <span asp-validation-for="Username" class="text-danger small"></span>
+                </div>
+                
+                <div class="mb-5">
+                    <label asp-for="Password" class="form-label text-secondary small text-uppercase fw-bold">Authentication</label>
+                    <input asp-for="Password" type="password" class="form-control bg-dark text-white border-0 p-3 shadow-sm" placeholder="Password" required />
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+                
+                <button type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow-lg">
+                    Authorize Access
+                </button>
+            </form>
+            
+            <div class="text-center mt-5">
+                <p class="text-secondary small mb-0">© 2026 Intalio Secure Infrastructure</p>
+                <p class="text-secondary xtra-small mt-1" style="font-size: 0.7rem;">Hint: Use 'admin' and your configured password.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

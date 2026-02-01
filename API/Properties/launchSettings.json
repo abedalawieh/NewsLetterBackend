@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "NewsletterApp.API": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:17860;http://localhost:17861"
+    }
+  }
+}

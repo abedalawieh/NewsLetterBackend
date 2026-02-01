@@ -1,0 +1,128 @@
+@page
+@model NewsletterApp.API.Areas.Admin.Pages.Admins.IndexModel
+@{
+    ViewData["Title"] = "Administrator Management";
+}
+
+<div class="d-flex align-items-center mb-5">
+    <h2 class="fw-bold mb-0">Administrators</h2>
+    <a asp-page="Create" class="btn btn-primary ms-auto">
+        <i class="fas fa-plus me-2"></i> Deploy New Admin
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-dark table-hover align-middle mb-0">
+            <thead class="table-active">
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Administrators?.Any() == true)
+                {
+                    @foreach (var admin in Model.Administrators)
+                    {
+                        <tr>
+                            <td class="fw-bold">@admin.UserName</td>
+                            <td>@admin.Email</td>
+                            <td>
+                                <span class="badge bg-primary">Administrator</span>
+                            </td>
+                            <td>
+                                @if (admin.IsActive)
+                                {
+                                    <span class="badge bg-success">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Inactive</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="btn btn-outline-info" title="Reset Password">
+                                        <i class="fas fa-key"></i>
+                                    </button>
+                                    @if (admin.UserName != "systemadmin")
+                                    {
+                                        <button type="button" class="btn btn-outline-warning" 
+                                                onclick="document.getElementById('toggleForm-@admin.Id').submit();"
+                                                title="Toggle Status">
+                                            <i class="fas fa-power-off"></i>
+                                        </button>
+                                    }
+                                    <button type="button" class="btn btn-outline-danger" title="Lock Account">
+                                        <i class="fas fa-lock"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" class="text-center text-secondary py-4">
+                            No administrators found
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Pagination -->
+@if (Model.Pagination?.TotalPages > 1)
+{
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            @for (int i = 1; i <= Model.Pagination.TotalPages; i++)
+            {
+                if (i == Model.Pagination.CurrentPage)
+                {
+                    <li class="page-item active">
+                        <span class="page-link">@i</span>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-page="Index" asp-route-pageNumber="@i">@i</a>
+                    </li>
+                }
+            }
+        </ul>
+    </nav>
+}
+
+<!-- Toggle Status Forms -->
+@foreach (var admin in Model.Administrators)
+{
+    @if (admin.UserName != "systemadmin")
+    {
+        <form id="toggleForm-@admin.Id" method="post" asp-page-handler="ToggleStatus" asp-route-id="@admin.Id" style="display:none;"></form>
+    }
+}
