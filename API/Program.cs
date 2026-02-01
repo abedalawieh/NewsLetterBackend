@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.IO;
 using NewsletterApp.Application.Interfaces;
 using NewsletterApp.Application.Services;
 using NewsletterApp.Domain.Entities;
@@ -13,6 +14,16 @@ using NewsletterApp.Infrastructure.Repositories;
 using NewsletterApp.Infrastructure.Services;
 using System.Text;
 using NewsletterApp.API.Middleware;
+
+var envPath = Path.Combine(Directory.GetCurrentDirectory(), ".env.production");
+if (!File.Exists(envPath))
+{
+    envPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "..", ".env.production"));
+}
+if (File.Exists(envPath))
+{
+    DotNetEnv.Env.Load(envPath);
+}
 
 var builder = WebApplication.CreateBuilder(args);
 
